@@ -7,8 +7,8 @@ import (
 	"strings"
 
 	"github.com/fsnotify/fsnotify"
+	"github.com/go-niom/niom/pkg/terminal"
 	"github.com/gookit/color"
-	"github.com/niom/pkg/terminal"
 )
 
 var (

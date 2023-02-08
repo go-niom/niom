@@ -8,11 +8,11 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/go-niom/niom/pkg/terminal"
+	"github.com/go-niom/niom/pkg/watcher"
+	"github.com/go-niom/niom/src/engine"
+	"github.com/go-niom/niom/utils"
 	"github.com/gookit/color"
-	"github.com/niom/pkg/terminal"
-	"github.com/niom/pkg/watcher"
-	"github.com/niom/src/engine"
-	"github.com/niom/utils"
 )
 
 type TemplateArgs struct {

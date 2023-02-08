@@ -1,4 +1,4 @@
-module github.com/niom
+module github.com/go-niom/niom
 
 go 1.19
 

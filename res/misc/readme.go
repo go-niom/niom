@@ -9,7 +9,7 @@ const MiscReadme = `
 
 ## Description
 
-[Niom](https://github.com/niomgo/niom) framework starter repository.
+[Niom](https://github.com/go-niom/niomgo/niom) framework starter repository.
 
 ## Installation
 

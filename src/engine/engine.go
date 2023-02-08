@@ -5,15 +5,15 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/niom/res/misc"
-	"github.com/niom/res/pkg/common"
-	"github.com/niom/res/pkg/config"
-	"github.com/niom/res/pkg/helpers"
-	"github.com/niom/res/pkg/logger"
-	"github.com/niom/res/pkg/middleware"
-	"github.com/niom/res/server"
-	"github.com/niom/res/src"
-	"github.com/niom/utils"
+	"github.com/go-niom/niom/res/misc"
+	"github.com/go-niom/niom/res/pkg/common"
+	"github.com/go-niom/niom/res/pkg/config"
+	"github.com/go-niom/niom/res/pkg/helpers"
+	"github.com/go-niom/niom/res/pkg/logger"
+	"github.com/go-niom/niom/res/pkg/middleware"
+	"github.com/go-niom/niom/res/server"
+	"github.com/go-niom/niom/res/src"
+	"github.com/go-niom/niom/utils"
 )
 
 func CreateInitialFiles(moduleName string) {
