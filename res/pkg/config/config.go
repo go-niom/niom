@@ -3,6 +3,7 @@ package config
 const PkgConfig = `package config
 
 import (
+	"fmt"
 	"log"
 	"time"
 
@@ -16,6 +17,9 @@ func FiberConfig() fiber.Config {
 	// Return Fiber configuration.
 	return fiber.Config{
 		ReadTimeout: time.Second * time.Duration(AppCfg().ReadTimeout),
+		ServerHeader:          AppCfg().AppName,
+		AppName:               fmt.Sprint(AppCfg().AppName),
+		DisableStartupMessage: true,
 	}
 }
 

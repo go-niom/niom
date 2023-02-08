@@ -4,7 +4,7 @@ const Env = `
 # APP settings:
 APP_NAME={{ .NameLowerCase}}
 APP_HOST="0.0.0.0"
-APP_PORT=3100
+APP_PORT=4000
 APP_READ_TIMEOUT=30
 APP_DEBUG=false
 
@@ -42,7 +42,7 @@ COPY --from=builder /go/src/app-build/{{ .NameLowerCase}} /app
 COPY .env /app
 
 LABEL Name={{ .NameLowerCase}} Version=0.0.1
-EXPOSE 3000
+EXPOSE 4000
 CMD ["./{{ .NameLowerCase}}"]
 `
 

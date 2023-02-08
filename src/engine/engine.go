@@ -11,6 +11,7 @@ import (
 	"github.com/go-niom/niom/res/pkg/helpers"
 	"github.com/go-niom/niom/res/pkg/logger"
 	"github.com/go-niom/niom/res/pkg/middleware"
+	pkgUtils "github.com/go-niom/niom/res/pkg/utils"
 	"github.com/go-niom/niom/res/server"
 	"github.com/go-niom/niom/res/src"
 	"github.com/go-niom/niom/utils"
@@ -43,6 +44,9 @@ func CreateInitialFiles(moduleName string) {
 
 	//logger
 	loggerFile(moduleName)
+
+	//utils
+	appUtils(moduleName)
 
 	//appCommon
 	appCommonFile(moduleName)
@@ -125,6 +129,12 @@ func appMiddleware(moduleName string) {
 func appHelper(appName string) {
 	directory := appName + "/pkg/helpers"
 	utils.RenderWriteToFile(helpers.HelperResponse, appName, directory+"/response.go")
+}
+
+func appUtils(moduleName string) {
+	appName := utils.GetAppName(moduleName)
+	directory := appName + "/pkg/utils"
+	utils.RenderWriteToFileModule(pkgUtils.PkgUtils, directory+"/utils.go", "utils", moduleName)
 }
 
 func createServer(moduleName string) {

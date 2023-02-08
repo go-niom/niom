@@ -77,7 +77,7 @@ func CmdExecute(dir, app string, args []string) string {
 		if (err.Error() == "signal: terminated") && IsCodeUpdated {
 			log.Println("Server Restarting ", IsCodeUpdated)
 			IsCodeUpdated = false
-			CmdExecute("myapp", "go", []string{"run", "main.go"})
+			CmdExecute(dir, "go", args)
 		} else if (err.Error() == "signal: terminated") && isUserExit {
 			log.Println("Server Stopped")
 			isUserExit = false

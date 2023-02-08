@@ -5,7 +5,6 @@ const Logger = `package logger
 import (
 	"io"
 	"os"
-	"runtime/debug"
 	"strconv"
 	"sync"
 	"time"
@@ -48,13 +47,10 @@ func Get() zerolog.Logger {
 			output = zerolog.MultiLevelWriter(os.Stderr, fileLogger)
 		}
 
-		buildInfo, _ := debug.ReadBuildInfo()
-
 		logger = zerolog.New(output).
 			Level(zerolog.Level(logLevel)).
 			With().
 			Timestamp().
-			Str("go_version", buildInfo.GoVersion).
 			Logger()
 	})
 

@@ -31,7 +31,7 @@ func LoadAppCfg() {
 	app.AppName = getEnv("APP_NAME", "APP_NAME")
 	app.Host = getEnv("APP_HOST", "localhost")
 	app.LogLevel = getEnv("LOG_LEVEL", "0")
-	app.Port, _ = strconv.Atoi(getEnv("APP_PORT", "3100"))
+	app.Port, _ = strconv.Atoi(getEnv("APP_PORT", "7000"))
 	app.Debug, _ = strconv.ParseBool(getEnv("APP_DEBUG", "false"))
 	timeOut, _ := strconv.Atoi(getEnv("APP_READ_TIMEOUT", "1000"))
 	app.ReadTimeout = time.Duration(timeOut) * time.Second

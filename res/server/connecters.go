@@ -2,14 +2,15 @@ package server
 
 const Connectors = `package server
 
-import "{{ .ModuleName}}/pkg/logger"
+import (
+	"runtime/debug"
+
+	"{{ .ModuleName}}/pkg/logger"
+)
 
 func initConnectors() {
 	log := logger.Get()
-	log.Info().Msg("Logger initialized")
-	// connect to DB
-	// if err := database.ConnectDB(); err != nil {
-	// 	logr.Panicf("failed database setup. error: %v", err)
-	// }
+	buildInfo, _ := debug.ReadBuildInfo()
+	log.Info().Str("go_version", buildInfo.GoVersion).Msg("Logger initialized")
 }
 `

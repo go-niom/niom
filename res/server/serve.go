@@ -10,7 +10,9 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"{{ .ModuleName}}/pkg/config"
+	"{{ .ModuleName}}/pkg/logger"
 )
+
 
 // Serve ..
 func Serve() {
@@ -27,6 +29,9 @@ func Serve() {
 	registerMiddleware(app)
 	registerRouters(app)
 
+	//Print app routes
+	//utils.GetRoutes(app)
+
 	// signal channel to capture system calls
 	sigCh := make(chan os.Signal, 1)
 	signal.Notify(sigCh, syscall.SIGTERM, syscall.SIGINT, syscall.SIGQUIT)
@@ -39,6 +44,10 @@ func Serve() {
 		_ = app.Shutdown()
 	}()
 
+	//Print server info
+	serverAddPrint := fmt.Sprintf("App Serving on http://%s:%d", config.AppCfg().Host, config.AppCfg().Port)
+	logger.Info(serverAddPrint)
+	
 	// start http server
 	serverAddr := fmt.Sprintf("%s:%d", appCfg.Host, appCfg.Port)
 	if err := app.Listen(serverAddr); err != nil {

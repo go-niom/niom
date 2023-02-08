@@ -2,10 +2,10 @@ package misc
 
 const MiscReadme = `
 <p align="center">
-  <a href="http://go-niom.com" target="blank"><img src="https://go-niom.com/img/logo_text.svg" width="320" alt="Niom Logo" /></a>
+  <a href="http://go-niom.com" target="blank"><img src="https://github.com/go-niom/niom/master/img/niom_logo.png" width="320" alt="Niom Logo" /></a>
 </p>
 
-<p align="center">A progressive <a href="https://go.dev" target="_blank">Golang</a> framework for developing efficient and scalable server-side applications.</p>
+<p align="center">Niom is a <a href="https://github.com/nestjs/nest" target="_blank">Nestjs</a> inspired progressive <a href="https://go.dev" target="_blank">Golang</a> web framework for developing efficient and scalable server-side applications. Designed to ease things up for fast development </p>
 
 ## Description
 
@@ -13,11 +13,11 @@ const MiscReadme = `
 
 ## Installation
 
-` + "```bash \n$ go mod tidy```" + `
+` + "```bash \n$ go mod tidy\n```" + `
 ## Running the app
-` + "```bash\n# development\n$ go run main.go\n# to build\n$ go build .```" + `
+` + "```bash\n# development mode\n$ niom start:dev\n# spin up\n$ niom start .\n```" + `
 ## Test 
-` + "\n```bash \n# unit tests \n$ go test packageName```" + `
+` + "\n```bash \n# unit tests \n$ go test packageName\n```" + `
 
 ## Support
 
