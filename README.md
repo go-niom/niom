@@ -1,6 +1,6 @@
 
 <p align="center">
-  <a href="http://go-niom.com" target="blank"><img src="https://github.com/go-niom/niom/master/img/niom_logo.png" width="320" alt="Niom Logo" /></a>
+  <a href="http://go-niom.com" target="blank"><img src="https://raw.githubusercontent.com/go-niom/niom/master/img/niom_logo.png" width="320" alt="Niom Logo" /></a>
 </p>
 
 
