@@ -10,7 +10,15 @@ import (
 )
 
 func registerRouters(a fiber.Router) {
+
 	common.GeneralRoute(a)
-	app.AppRouter(a)
+	common.SwaggerRoute(a)
+	
+	//api router path
+	api := a.Group("/api")
+	v1 := api.Group("/v1")
+
+	//Add Custom routers
+	app.AppRouter(v1)
 }
 `

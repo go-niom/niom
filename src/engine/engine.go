@@ -5,6 +5,7 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/go-niom/niom/pkg/utils"
 	"github.com/go-niom/niom/res/misc"
 	"github.com/go-niom/niom/res/pkg/common"
 	"github.com/go-niom/niom/res/pkg/config"
@@ -14,7 +15,6 @@ import (
 	pkgUtils "github.com/go-niom/niom/res/pkg/utils"
 	"github.com/go-niom/niom/res/server"
 	"github.com/go-niom/niom/res/src"
-	"github.com/go-niom/niom/utils"
 )
 
 func CreateInitialFiles(moduleName string) {
@@ -87,16 +87,16 @@ func modFile(appName string) {
 }
 
 func createFiles(appName string) {
-	utils.RenderWriteToFile(utils.DockerIgnore, appName, appName+"/.dockerignore")
-	utils.RenderWriteToFile(utils.DockerFile, appName, appName+"/.Dockerfile")
-	utils.RenderWriteToFile(utils.Env, appName, appName+"/.env")
-	utils.RenderWriteToFile(utils.Env, appName, appName+"/env.example")
+	utils.RenderWriteToFile(misc.MiscDockerIgnore, appName, appName+"/.dockerignore")
+	utils.RenderWriteToFile(misc.MiscDockerFile, appName, appName+"/.Dockerfile")
+	utils.RenderWriteToFile(misc.MiscEnv, appName, appName+"/.env")
+	utils.RenderWriteToFile(misc.MiscEnv, appName, appName+"/env.example")
 	utils.RenderWriteToFile(misc.MiscReadme, appName, appName+"/README.md")
 }
 
 func createModuleFile(moduleName string) {
 	appName := utils.GetAppName(moduleName)
-	utils.RenderWriteToFileModule(utils.MainGo, appName+"/main.go", "main", moduleName)
+	utils.RenderWriteToFileModule(misc.MiscMainGo, appName+"/main.go", "main", moduleName)
 }
 
 func createConfigFiles(appName string) {

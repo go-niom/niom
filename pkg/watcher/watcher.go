@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/fsnotify/fsnotify"
+	"github.com/go-niom/niom/pkg/logger"
 	"github.com/go-niom/niom/pkg/terminal"
 	"github.com/gookit/color"
 )
@@ -66,19 +67,16 @@ func watchFolder(path string) {
 }
 
 func Watch() {
+	logger.Info("watching path(s): *.*")
+	logger.Info("watching extensions: *")
 	rebuildCheck()
 	root := "."
 	filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
 
-		if info.IsDir() { //&& !isTmpDir(path)
+		if info.IsDir() {
 			if len(path) > 1 && strings.HasPrefix(filepath.Base(path), ".") {
 				return filepath.SkipDir
 			}
-
-			// if isIgnoredFolder(path) {
-			// 	watcherLog("Ignoring %s", path)
-			// 	return filepath.SkipDir
-			// }
 			watchFolder(path)
 		}
 

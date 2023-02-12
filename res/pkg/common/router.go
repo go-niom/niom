@@ -3,13 +3,14 @@ package common
 const CommonRouter = `package common
 
 import (
+	"github.com/gofiber/swagger"
 	"github.com/gofiber/fiber/v2"
 )
 
 func GeneralRoute(a fiber.Router) {
 	a.Get("/", func(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{
-			"msg":    "Welcome to Fiber Go API!",
+			"msg":    "Hello World!",
 			"docs":   "/swagger/index.html",
 			"status": "/h34l7h",
 		})
@@ -22,12 +23,10 @@ func GeneralRoute(a fiber.Router) {
 	})
 }
 
-// func SwaggerRoute(a *fiber.App) {
-// 	fmt.Println("test swagger")
-// 	// Create route group.
-// 	route := a.Group("/swagger")
-// 	route.Get("*", swagger.Handler)
-// }
+func SwaggerRoute(a fiber.Router) {
+	//Create route group.
+	a.Get("/swagger/*", swagger.HandlerDefault)
+}
 
 func NotFoundRoute(a *fiber.App) {
 	a.Use(

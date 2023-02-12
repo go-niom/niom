@@ -11,6 +11,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"{{ .ModuleName}}/pkg/config"
 	"{{ .ModuleName}}/pkg/logger"
+	"{{ .ModuleName}}/pkg/common"
 )
 
 
@@ -32,6 +33,9 @@ func Serve() {
 	//Print app routes
 	//utils.GetRoutes(app)
 
+	//Not found route
+	common.NotFoundRoute(app)
+
 	// signal channel to capture system calls
 	sigCh := make(chan os.Signal, 1)
 	signal.Notify(sigCh, syscall.SIGTERM, syscall.SIGINT, syscall.SIGQUIT)
@@ -45,13 +49,19 @@ func Serve() {
 	}()
 
 	//Print server info
-	serverAddPrint := fmt.Sprintf("App Serving on http://%s:%d", config.AppCfg().Host, config.AppCfg().Port)
-	logger.Info(serverAddPrint)
+	serverAddPrint := fmt.Sprintf("http://%s:%d", appCfg.Host, appCfg.Port)
+	fmt.Println(` + "`" + `
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	App Name:	` + "`" + ` + appCfg.AppName + ` + "`" + `
+	App Env:	` + "`" + ` + appCfg.AppEnv + ` + "`" + `
+	Serving on:	` + "`" + ` + serverAddPrint + ` + "`" + `
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			` + "`" + `)
 	
 	// start http server
 	serverAddr := fmt.Sprintf("%s:%d", appCfg.Host, appCfg.Port)
 	if err := app.Listen(serverAddr); err != nil {
-		fmt.Println("Oops... server is not running! error: %v", err)
+		logger.Error("Server is not running!", err)
 	}
 
 }

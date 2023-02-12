@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/go-niom/niom/pkg/constants"
 	"github.com/go-niom/niom/pkg/terminal"
+	"github.com/go-niom/niom/pkg/utils"
 	"github.com/go-niom/niom/pkg/watcher"
 	"github.com/go-niom/niom/src/engine"
-	"github.com/go-niom/niom/utils"
 	"github.com/gookit/color"
 )
 
@@ -22,7 +23,9 @@ func help() {
 	print(`COMMANDS:
   new|n [options] [name]                          Generate Niom application.
   build [options] [app]                           Build Niom application.
-  start:dev [options] [app]                           Run app rebuild/watch mode.
+  start:dev [options] [app]                       Run app rebuild/watch mode.
+  update|u [options]                              Update Niom CLI.
+  swagger|sg [options]                            Generate Swagger docs
   generate|g [options] <schematic> [name] [path]  Generate a Niom element.`)
 	print(`
 	┌───────────────────────────────────────────────────────────────────┐
@@ -42,17 +45,27 @@ func help() {
 	Example: niom g res user` + "\n")
 }
 
+func swagInit(appName string) {
+	terminal.CmdExecute(appName, "go", []string{"install", "github.com/swaggo/swag/cmd/swag@latest"})
+	swagExecute(appName)
+}
+
+func swagExecute(appName string) {
+	terminal.CmdExecute(appName, "swag", []string{"init"})
+}
+
 func execute(moduleName string) {
 
 	appName := utils.GetAppName(moduleName)
 	color.Greenln("\nInstalling dependencies....")
+	swagInit(appName)
 	terminal.CmdExecute(appName, "go", []string{"mod", "tidy"})
 
-	println(`
+	fmt.Println(`
 🚀  Successfully created project ` + appName + `
 👉  Get started with the following commands:`)
 	color.Redln("\n\t$ cd " + appName)
-	println("\t$ niom start:dev")
+	fmt.Println("\t$ niom start:dev")
 	color.Greenln("\t$ niom -h\n")
 	color.Cyanln("🙏 Thanks for installing Niom 🙏\n")
 
@@ -61,7 +74,7 @@ func execute(moduleName string) {
 
 func newApp(cmd []string) {
 	if len(cmd) < 3 {
-		println(`
+		fmt.Print(`
 Example usage:
         'niom new app_name' to initialize a v0 or v1 module
         'niom new example.com/m' to initialize a v0 or v1 module
@@ -82,17 +95,19 @@ func info() {
 }
 
 func g() {
-	println("Generate app")
+	fmt.Println("Generate app")
 }
 
 func spinUp(appName string) {
 	watcher.Watch()
 	terminal.CmdExecute(appName, "go", []string{"run", "."})
+
 }
 
 func dev() {
 	watcher.Watch()
 	terminal.CmdExecute(".", "go", []string{"run", "."})
+	<-terminal.TerminalChannel
 }
 
 func start() {
@@ -103,10 +118,14 @@ func version() {
 	welcome()
 }
 
+func updateApp() {
+	terminal.CmdExecute(".", "go", []string{"install", "github.com/go-niom/niom@latest"})
+}
+
 func welcome() {
 
-	println(`
--------------------- Welcome to world of  -------------------------
+	fmt.Println(`
+--------------------- Welcome to th world of ----------------------
 -------------------------------------------------------------------
 ----------________    ___   ________   _____ ______   -------------
 --------- |\   ___  \ |\  \ |\   __  \ |\   _ \  _   \ ------------
@@ -116,7 +135,7 @@ func welcome() {
 ------------ \ \__\\ \__\\ \__\\ \_______\\ \__\    \ \__\ --------
 ------------- \|__| \|__| \|__| \|_______| \|__|     \|__| --------
 -------------------------------------------------------------------
------------------------------- Version 0.1 ------------------------ `)
+---------------------------- Version: ` + constants.AppVersion + ` ------------------------ `)
 
 	// 	println(
 	// 		`
@@ -127,7 +146,7 @@ func welcome() {
 	// 	println(`
 	// -----------------------------------------------------------------------------------
 	// --------------------------------- Version: 0.1 ------------------------------------`)
-	println("\nTry -h, --help  for usage information.\n")
+	fmt.Println("\nTry -h, --help  for usage information.")
 
 }
 
@@ -167,6 +186,8 @@ func commands(args []string) {
 		info()
 	case "u":
 		fallthrough
+	case "update":
+		updateApp()
 	case "g":
 		fallthrough
 	case "generate":
@@ -175,6 +196,10 @@ func commands(args []string) {
 		dev()
 	case "start":
 		start()
+	case "sg":
+		fallthrough
+	case "swagger":
+		swagExecute(".")
 	default:
 		fmt.Printf("Command not available %s\n", cmd)
 		help()
