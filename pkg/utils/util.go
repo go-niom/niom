@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -11,6 +12,7 @@ import (
 	"strings"
 	"text/template"
 
+	"github.com/go-niom/niom/pkg/logger"
 	"github.com/gookit/color"
 )
 
@@ -118,4 +120,35 @@ func ListContains(value string, list []string) bool {
 		}
 	}
 	return false
+}
+
+func check(e error) string {
+	if e != nil {
+		logger.Error("File Error: ", e.Error())
+		return e.Error()
+	}
+	return ""
+}
+
+type niomCli struct {
+	ModuleName string `json:"module_name"`
+	AppName    string `json:"app_name"`
+	SourceRoot string `json:"sourceRoot"`
+}
+
+func GetNiomCliConfig() *niomCli {
+	data, err := os.ReadFile("./niom-cli.json")
+
+	if err := check(err); err != "" {
+		return nil
+	}
+
+	niomCli := niomCli{}
+	err = json.Unmarshal(data, &niomCli)
+
+	if err != nil {
+		logger.Error("Error while reading niom-cli.json", err.Error())
+	}
+
+	return &niomCli
 }

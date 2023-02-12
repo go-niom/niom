@@ -20,7 +20,7 @@ import (
 func CreateInitialFiles(moduleName string) {
 
 	appName := utils.GetAppName(moduleName)
-	// createApp(moduleName, "app")
+	// create(moduleName, "app")
 	// return
 	// init go.mod file
 	modFile(moduleName)
@@ -60,7 +60,7 @@ func CreateInitialFiles(moduleName string) {
 	createServer(moduleName)
 
 	//create app
-	createApp(moduleName, "app")
+	create(moduleName, "app")
 
 }
 
@@ -146,14 +146,18 @@ func createServer(moduleName string) {
 	utils.RenderWriteToFileModule(server.Middleware, directory+"/middleware.go", "server", moduleName)
 }
 
-func createApp(moduleName, resName string) {
+func create(moduleName, resName string) {
 	appName := utils.GetAppName(moduleName)
-	directoryRes := appName + "/src/app/" + resName
-	directoryRes2 := appName + "/src/app/"
-	utils.RenderWriteToFileModule(src.ControllerTmpl, directoryRes+".controller.go", resName, moduleName)
-	utils.RenderWriteToFileModule(src.ServiceTmpl, directoryRes+".service.go", resName, moduleName)
-	utils.RenderWriteToFileModule(src.RouterTmpl, directoryRes+".router.go", resName, moduleName)
+	dir := appName + "/src/app/"
+	CreateResource(moduleName, dir, resName)
+}
 
-	utils.RenderWriteToFileModule(src.DTO, directoryRes2+"dto/"+resName+".dto.go", resName, moduleName)
-	utils.RenderWriteToFileModule(src.Model, directoryRes2+"model/"+resName+".model.go", resName, moduleName)
+func CreateResource(moduleName, dir, resName string) {
+	directoryFile := dir + resName
+	utils.RenderWriteToFileModule(src.ControllerTmpl, directoryFile+".controller.go", resName, moduleName)
+	utils.RenderWriteToFileModule(src.ServiceTmpl, directoryFile+".service.go", resName, moduleName)
+	utils.RenderWriteToFileModule(src.RouterTmpl, directoryFile+".router.go", resName, moduleName)
+
+	utils.RenderWriteToFileModule(src.DTO, dir+"dto/"+resName+".dto.go", resName, moduleName)
+	utils.RenderWriteToFileModule(src.Model, dir+"model/"+resName+".model.go", resName, moduleName)
 }
