@@ -110,3 +110,12 @@ func GetAppName(moduleName string) string {
 	split := strings.Split(moduleName, "/")
 	return split[len(split)-1]
 }
+
+func ListContains(value string, list []string) bool {
+	for _, v := range list {
+		if v == strings.Trim(value, " ") {
+			return true
+		}
+	}
+	return false
+}

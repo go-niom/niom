@@ -3,95 +3,72 @@ package commands
 import (
 	"fmt"
 
+	"github.com/go-niom/niom/pkg/utils"
 	"github.com/go-niom/niom/src/handler"
 )
 
-func help(cmd string) {
-	switch cmd {
-	case "h":
-		fallthrough
-	case "-h":
-		fallthrough
-	case "help":
-		fallthrough
-	case "--help":
+func help(cmd string) bool {
+	if utils.ListContains(cmd, []string{"h", "-h", "help", "--help"}) {
 		handler.Help()
+		return true
 	}
+	return false
 }
 
-func version(cmd string) {
-	switch cmd {
-	case "v":
-		fallthrough
-	case "-v":
-		fallthrough
-	case "version":
-		fallthrough
-	case "--version":
+func version(cmd string) bool {
+	if utils.ListContains(cmd, []string{"v", "-v", "version", "--version"}) {
 		handler.Version()
+		return true
 	}
+	return false
 }
 
-func new(cmd string, args []string) {
-	switch cmd {
-	case "n":
-		fallthrough
-	case "-n":
-		fallthrough
-	case "new":
-		fallthrough
-	case "--new":
+func new(cmd string, args []string) bool {
+	if utils.ListContains(cmd, []string{"n", "-n", "new", "--new"}) {
 		handler.NewApp(args)
+		return true
 	}
+	return false
 }
 
-func build(cmd string, args []string) {
-	switch cmd {
-	case "b":
-		fallthrough
-	case "-b":
-		fallthrough
-	case "build":
-		fallthrough
-	case "--build":
+func build(cmd string, args []string) bool {
+	if utils.ListContains(cmd, []string{"b", "-b", "build", "--build"}) {
 		handler.Build()
+		return true
 	}
+	return false
 }
 
-func info(cmd string) {
-	switch cmd {
-	case "i":
-		fallthrough
-	case "info":
+func info(cmd string) bool {
+	if utils.ListContains(cmd, []string{"i", "info"}) {
 		handler.Info()
+		return true
 	}
+	return false
 }
 
-func update(cmd string, args []string) {
-	switch cmd {
-	case "u":
-		fallthrough
-	case "update":
+func update(cmd string, args []string) bool {
+	if utils.ListContains(cmd, []string{"u", "update"}) {
 		handler.UpdateApp()
+		return true
 	}
+	return false
 }
 
-func generate(cmd string, args []string) {
-	switch cmd {
-	case "g":
-		fallthrough
-	case "generate":
+func generate(cmd string, args []string) bool {
+	if utils.ListContains(cmd, []string{"g", "generate"}) {
 		handler.Generate()
+		return true
 	}
+	return false
 }
 
-func swagger(cmd string, args []string) {
-	switch cmd {
-	case "sg":
-		fallthrough
-	case "swagger":
+func swagger(cmd string, args []string) bool {
+	if utils.ListContains(cmd, []string{"sg", "swagger"}) {
 		handler.SwagExecute(".")
+		return true
 	}
+	return false
 }
 
 func start(cmd string, args []string) {
@@ -102,19 +79,34 @@ func start(cmd string, args []string) {
 		handler.Start()
 	default:
 		fmt.Printf("Command not available %s\n", cmd)
-		handler.Help()
 	}
 }
 
 func Commands(args []string) {
 	cmd := args[1]
-	help(cmd)
-	version(cmd)
-	info(cmd)
-	new(cmd, args)
-	build(cmd, args)
-	generate(cmd, args)
-	update(cmd, args)
+	if help(cmd) {
+		return
+	}
+	if version(cmd) {
+		return
+	}
+	if info(cmd) {
+		return
+	}
+	if new(cmd, args) {
+		return
+	}
+	if build(cmd, args) {
+		return
+	}
+	if generate(cmd, args) {
+		return
+	}
+	if update(cmd, args) {
+		return
+	}
+	if swagger(cmd, args) {
+		return
+	}
 	start(cmd, args)
-	swagger(cmd, args)
 }
