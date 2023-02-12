@@ -96,6 +96,7 @@ func createFiles(appName string) {
 
 func createModuleFile(moduleName string) {
 	appName := utils.GetAppName(moduleName)
+	utils.RenderMain(misc.MiscMainGo, appName+"/main.go", "main", moduleName)
 	utils.RenderWriteToFileModule(misc.MiscMainGo, appName+"/main.go", "main", moduleName)
 }
 

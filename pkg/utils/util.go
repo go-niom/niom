@@ -48,6 +48,11 @@ func RenderWriteToFileModule(tmpl, fileName, packageName, module_name string) {
 	renderWrite(td, tmpl, fileName)
 }
 
+func RenderMain(tmpl, fileName, packageName, module_name string) {
+	td := TemplateArgs{Name: strings.Title(strings.Split(fileName, "/")[0]), NameLowerCase: packageName, ModuleName: module_name}
+	renderWrite(td, tmpl, fileName)
+}
+
 func RenderWriteToFile(tmpl string, func_name string, file_name string) {
 	td := TemplateArgs{Name: strings.Title(func_name), NameLowerCase: func_name}
 	renderWrite(td, tmpl, file_name)

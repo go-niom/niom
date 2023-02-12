@@ -122,7 +122,6 @@ func (term *TerminalCmd) Execute() error {
 }
 
 func CmdExecute(appName, app string, args []string) {
-	logger.Info("Starting....")
 	TermCmd = TerminalCmd{
 		Dir: appName, App: app, Args: args,
 	}

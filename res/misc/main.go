@@ -11,12 +11,12 @@ import (
 	"{{ .ModuleName}}/pkg/config"
 )
 
-// @title Travel App
+// @title {{ .Name}}
 // @version 1.0
-// @description Travel App Backend REST API
+// @description {{ .Name}} Backend REST API
 // @in header
 // @name Authorization
-// @host localhost:7000
+// @host 127.0.0.1:7000
 // @BasePath /api
 func main() {
 
