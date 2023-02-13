@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/fsnotify/fsnotify"
+	"github.com/go-niom/niom/pkg/constants"
 	"github.com/go-niom/niom/pkg/logger"
 	"github.com/go-niom/niom/pkg/terminal"
 	"github.com/gookit/color"
@@ -24,6 +25,7 @@ func rebuildCheck() {
 	go func() {
 		for {
 			eventName := <-WatcherChannel
+			color.Bluep(constants.AppSign)
 			color.Greenp("Modified File: ")
 			println(eventName)
 			terminal.IsCodeUpdated = true

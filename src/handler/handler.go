@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/go-niom/niom/pkg/constants"
+	"github.com/go-niom/niom/pkg/logger"
 	"github.com/go-niom/niom/pkg/terminal"
 	"github.com/go-niom/niom/pkg/utils"
 	"github.com/go-niom/niom/pkg/watcher"
@@ -80,19 +81,19 @@ func Help() {
 }
 
 func SwagInit(appName string) {
-	terminal.CmdExecute(appName, "go", []string{"install", "github.com/swaggo/swag/cmd/swag@latest"})
+	terminal.CmdExecute(appName, "go", []string{"install", "github.com/swaggo/swag/cmd/swag@latest"}, false)
 	SwagExecute(appName)
 }
 
 func SwagExecute(appName string) {
-	terminal.CmdExecute(appName, "swag", []string{"init"})
+	terminal.CmdExecute(appName, "swag", []string{"init"}, false)
 }
 
 func Execute(moduleName string) {
 	appName := utils.GetAppName(moduleName)
 	color.Greenln("\nInstalling dependencies....")
 	SwagInit(appName)
-	terminal.CmdExecute(appName, "go", []string{"mod", "tidy"})
+	terminal.CmdExecute(appName, "go", []string{"mod", "tidy"}, false)
 
 	fmt.Println(`
 🚀  Successfully created project ` + appName + `
@@ -104,7 +105,7 @@ func Execute(moduleName string) {
 }
 
 func Build() {
-	terminal.CmdExecute(".", "go", []string{"build", "."})
+	terminal.CmdExecute(".", "go", []string{"build", "."}, false)
 }
 
 func Info() {
@@ -117,19 +118,38 @@ func Generate() {
 
 func SpinUp(appName string) {
 	watcher.Watch()
-	terminal.CmdExecute(appName, "go", []string{"run", "."})
+	terminal.CmdExecute(appName, "go", []string{"run", "."}, false)
 }
 
-func Dev() {
+func Dev(args []string) {
 	watcher.Watch()
-	terminal.CmdExecute(".", "go", []string{"run", "."})
+	Start(args)
+	// terminal.CmdExecute(".", "go", []string{"run", "."})
 	<-terminal.TerminalChannel
 }
 
-func Start() {
-	terminal.CmdExecute(".", "go", []string{"run", "."})
+func Start(args []string) {
+	path := "."
+	res := utils.ArgsStruct{
+		Prefix: "-c=",
+		Args:   args,
+	}
+	if p := utils.ReadArgs("-p=", args); p != "" {
+		path = p
+	}
+
+	res.AppAndArgs()
+	appArgs := res.Result
+	cmdArgs := []string{"run", "."}
+	app := "go"
+	if appArgs.App != "" {
+		cmdArgs = appArgs.Args
+		app = appArgs.App
+	}
+	logger.Info(fmt.Sprintf("Running command: %s %s\n", app, cmdArgs))
+	terminal.CmdExecute(path, app, cmdArgs, true)
 }
 
 func UpdateApp() {
-	terminal.CmdExecute(".", "go", []string{"install", "github.com/go-niom/niom@latest"})
+	terminal.CmdExecute(".", "go", []string{"install", "github.com/go-niom/niom@latest"}, false)
 }

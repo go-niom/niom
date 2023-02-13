@@ -23,9 +23,10 @@ var (
 )
 
 type TerminalCmd struct {
-	Dir  string
-	App  string
-	Args []string
+	Dir         string
+	App         string
+	Args        []string
+	ShowMessage bool
 }
 
 func KillFunc() error {
@@ -118,12 +119,16 @@ func (term *TerminalCmd) Execute() error {
 	if err := cmd.Wait(); err != nil {
 		return term.cmdErrors(err)
 	}
+	if term.ShowMessage {
+		logger.Info("Command Executed Successfully")
+	}
 	return nil
 }
 
-func CmdExecute(appName, app string, args []string) {
+func CmdExecute(dir, app string, args []string, showMessage bool) {
 	TermCmd = TerminalCmd{
-		Dir: appName, App: app, Args: args,
+		Dir: dir, App: app, Args: args,
+		ShowMessage: showMessage,
 	}
 	TermCmd.Execute()
 }
