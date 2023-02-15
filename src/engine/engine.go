@@ -9,9 +9,9 @@ import (
 	"github.com/go-niom/niom/res/misc"
 	"github.com/go-niom/niom/res/pkg/common"
 	"github.com/go-niom/niom/res/pkg/config"
-	"github.com/go-niom/niom/res/pkg/helpers"
 	"github.com/go-niom/niom/res/pkg/logger"
 	"github.com/go-niom/niom/res/pkg/middleware"
+	"github.com/go-niom/niom/res/pkg/response"
 	pkgUtils "github.com/go-niom/niom/res/pkg/utils"
 	"github.com/go-niom/niom/res/server"
 	"github.com/go-niom/niom/res/src"
@@ -128,7 +128,7 @@ func appMiddleware(moduleName string) {
 
 func appHelper(appName string) {
 	directory := appName + "/pkg/helpers"
-	utils.RenderWriteToFile(helpers.HelperResponse, appName, directory+"/response.go")
+	utils.RenderWriteToFile(response.HelperResponse, appName, directory+"/response.go")
 }
 
 func appUtils(moduleName string) {

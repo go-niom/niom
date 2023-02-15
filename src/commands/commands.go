@@ -30,6 +30,9 @@ func Commands(args []string) {
 		handler.Dev(args[2:])
 	case "start":
 		handler.Start(args[2:])
+	case "migrate":
+		migrations(args[2:])
+
 	default:
 		fmt.Printf("Command not available %s\n", cmd)
 	}

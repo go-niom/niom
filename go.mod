@@ -8,6 +8,7 @@ require (
 )
 
 require (
+	github.com/lib/pq v1.10.7
 	github.com/xo/terminfo v0.0.0-20210125001918-ca9a967f8778 // indirect
 	golang.org/x/sys v0.0.0-20220908164124-27713097b956 // indirect
 )

@@ -44,7 +44,7 @@ func KillFunc() error {
 }
 
 // to check user cancel event cmd+c
-func init() {
+func initSignal() {
 	c := make(chan os.Signal)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 	go func() {
@@ -126,6 +126,7 @@ func (term *TerminalCmd) Execute() error {
 }
 
 func CmdExecute(dir, app string, args []string, showMessage bool) {
+	initSignal()
 	TermCmd = TerminalCmd{
 		Dir: dir, App: app, Args: args,
 		ShowMessage: showMessage,

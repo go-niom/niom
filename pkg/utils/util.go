@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"bufio"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -108,6 +109,26 @@ func ensureDir(dirName string) error {
 	return err
 }
 
+func CreateFileWithData(filePath, data string) {
+	splitDir := strings.Split(filePath, "/")
+	if len(splitDir) > 1 {
+		dir := strings.Join(splitDir[0:len(splitDir)-1], "/")
+		if err := ensureDir(dir); err != nil {
+			fmt.Println("Directory creation failed with error: " + err.Error())
+			os.Exit(1)
+		}
+	}
+	file_name := strings.Join(splitDir, "/")
+	file, err := os.Create(file_name)
+	if err != nil {
+		panic(err)
+	}
+	file.Write([]byte(data))
+	file.Name()
+	color.Println(`<green>CREATE</> file:`, file.Name())
+	defer file.Close()
+}
+
 func GetAppName(moduleName string) string {
 	split := strings.Split(moduleName, "/")
 	return split[len(split)-1]
@@ -151,4 +172,16 @@ func GetNiomCliConfig() *niomCli {
 	}
 
 	return &niomCli
+}
+
+func UserPrompt(message string) string {
+	// Create a new scanner to read input from the command line
+	scanner := bufio.NewScanner(os.Stdin)
+
+	fmt.Print(message)
+	// Scan for the next token, which is assumed to be a line
+	scanner.Scan()
+	// Get the text from the scanned line
+	input := scanner.Text()
+	return input
 }
