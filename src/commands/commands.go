@@ -30,7 +30,11 @@ func Commands(args []string) {
 		handler.Dev(args[2:])
 	case "start":
 		handler.Start(args[2:])
-	case "migrate":
+	case "install":
+		handler.InstallDev(args[2:])
+	case "install:dev":
+		handler.InstallDev(args[2:])
+	case "migration":
 		migrations(args[2:])
 
 	default:

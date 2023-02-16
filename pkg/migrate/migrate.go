@@ -24,10 +24,11 @@ type MigrationScheme struct {
 	CreatedAt time.Time `db:"created_at"`
 }
 
-func Up() {
+func Up(args []string) {
 	logger.Info("Migration started")
 	pattern := "up.sql"
-	dir := "db/migrations"
+
+	dir := getMigrationPath("db/migrations/", args)
 	fileList := getFilesAscendingOrder(dir, pattern)
 	if fileList == nil {
 		logger.Warn("Migration files are not available.")
@@ -93,16 +94,46 @@ func Up() {
 		}
 	}
 	if hasMigration {
-		logger.Warn("Migration completed")
+		logger.Info("Migration completed")
 	} else {
 		logger.Warn("Nothing new to Migrate")
 	}
 
 }
 
-func Down(arg string) {
+func Status() {
+	db := GetDB()
+	if db == nil {
+		return
+	}
+	var err error
+	rows, err := db.Query(`SELECT * from migration_scheme`)
+	if err != nil {
+		if strings.Contains(err.Error(), "does not") {
+			err := createMigrationTable(db)
+			if err != nil {
+				logger.Error("", err.Error())
+				return
+			}
+		}
+	}
+
+	count := 0
+	for rows.Next() {
+		var s MigrationScheme
+		err := rows.Scan(&s.ID, &s.FileName, &s.Batch, &s.CreatedAt)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Printf("%s	%d 	%s \n", s.CreatedAt.Format(time.RFC3339), s.ID, s.FileName)
+		count += 1
+	}
+	logger.Info(fmt.Sprintf("Total No. of Migration: %d", count))
+}
+
+func Down(arg string, args []string) {
 	logger.Info("Rollback...")
-	dir := "db/migrations"
+	dir := getMigrationPath("db/migrations/", args)
 	isMulti := arg == "-a"
 	db := GetDB()
 	if db == nil {
@@ -181,12 +212,28 @@ func Down(arg string) {
 	logger.Info("Rollback aborted")
 }
 
-func Create(fileName, up, dn string) {
+func CreateWithPath(fileName, filePath, up, dn string) {
 	timestamp := time.Now().Format("20060102150405") // format timestamp as yyyymmddHHMMSS
 	upFile := fmt.Sprintf("%s_%s.%s", timestamp, fileName, "up.sql")
 	downFile := fmt.Sprintf("%s_%s.%s", timestamp, fileName, "down.sql")
-	utils.CreateFileWithData("db/migrations/"+upFile, "BEGIN;\n"+up+"\nCOMMIT;")
-	utils.CreateFileWithData("db/migrations/"+downFile, "BEGIN;\n"+dn+"\nCOMMIT;")
+	utils.CreateFileWithData(filePath+upFile, "BEGIN;\n"+up+"\nCOMMIT;")
+	utils.CreateFileWithData(filePath+downFile, "BEGIN;\n"+dn+"\nCOMMIT;")
+}
+
+func getMigrationPath(filePath string, args []string) string {
+	argsPath := utils.ReadArgs("-p=", args)
+	if argsPath != "" {
+		filePath = argsPath
+		if !strings.HasSuffix(filePath, "/") {
+			filePath = filePath + "/"
+		}
+	}
+	return filePath
+}
+
+func Create(args []string, fileName string, up, dn string) {
+	filePath := getMigrationPath("db/migrations/", args)
+	CreateWithPath(fileName, filePath, up, dn)
 }
 
 func CreateSample(args []string) {
@@ -194,25 +241,26 @@ func CreateSample(args []string) {
 	if len(args) > 0 && args[0] == "seed" {
 		isSeed = true
 	}
-	pgSqlBlog(isSeed)
+
+	pgSqlBlog(isSeed, args)
 }
 
-func pgSqlBlog(isSeed bool) {
+func pgSqlBlog(isSeed bool, args []string) {
 
 	if !isSeed {
-		Create("users", blog.PGCreateUsersTable, blog.PGDropUsersTable)
-		Create("categories", blog.PGCreateCategoriesTable, blog.PGDropCategoriesTable)
-		Create("posts", blog.PGCreatePostTable, blog.PGDropPostTable)
-		Create("comments", blog.PGCreateCommentTable, blog.PGDropCommentTable)
+		Create(args, "users", blog.PGCreateUsersTable, blog.PGDropUsersTable)
+		Create(args, "categories", blog.PGCreateCategoriesTable, blog.PGDropCategoriesTable)
+		Create(args, "posts", blog.PGCreatePostTable, blog.PGDropPostTable)
+		Create(args, "comments", blog.PGCreateCommentTable, blog.PGDropCommentTable)
 		time.Sleep(1 * time.Second)
-		Create("table_alter", blog.PGBlogAlter, blog.PGBlogOppositeAlter)
+		Create(args, "table_alter", blog.PGBlogAlter, blog.PGBlogOppositeAlter)
 	} else {
-		Create("users", blog.PGCreateUsersTable+"\n"+blog.PGBlogUserInsert, blog.PGDropUsersTable)
-		Create("categories", blog.PGCreateCategoriesTable+"\n"+blog.PGBlogCategoriesInsert, blog.PGDropCategoriesTable)
-		Create("posts", blog.PGCreatePostTable+"\n"+blog.PGBlogPostInsert, blog.PGDropPostTable)
-		Create("comments", blog.PGCreateCommentTable+"\n"+blog.PGBlogCommentInsert, blog.PGDropCommentTable)
+		Create(args, "users", blog.PGCreateUsersTable+"\n"+blog.PGBlogUserInsert, blog.PGDropUsersTable)
+		Create(args, "categories", blog.PGCreateCategoriesTable+"\n"+blog.PGBlogCategoriesInsert, blog.PGDropCategoriesTable)
+		Create(args, "posts", blog.PGCreatePostTable+"\n"+blog.PGBlogPostInsert, blog.PGDropPostTable)
+		Create(args, "comments", blog.PGCreateCommentTable+"\n"+blog.PGBlogCommentInsert, blog.PGDropCommentTable)
 		time.Sleep(1 * time.Second)
-		Create("table_alter", blog.PGBlogAlter, blog.PGBlogOppositeAlter)
+		Create(args, "table_alter", blog.PGBlogAlter, blog.PGBlogOppositeAlter)
 	}
 }
 

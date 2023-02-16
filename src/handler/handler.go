@@ -5,7 +5,6 @@ import (
 
 	"github.com/go-niom/niom/pkg/constants"
 	"github.com/go-niom/niom/pkg/logger"
-	"github.com/go-niom/niom/pkg/migrate"
 	"github.com/go-niom/niom/pkg/terminal"
 	"github.com/go-niom/niom/pkg/utils"
 	"github.com/go-niom/niom/pkg/watcher"
@@ -109,6 +108,16 @@ func Build() {
 	terminal.CmdExecute(".", "go", []string{"build", "."}, false)
 }
 
+func InstallDev(args []string) {
+	watcher.Watch()
+	terminal.CmdExecute(".", "go", []string{"install", "."}, true)
+	<-terminal.TerminalChannel
+}
+
+func Install(args []string) {
+	terminal.CmdExecute(".", "go", []string{"install", "."}, true)
+}
+
 func Info() {
 	Welcome()
 }
@@ -149,29 +158,6 @@ func Start(args []string) {
 	}
 	logger.Info(fmt.Sprintf("Running command: %s %s\n", app, cmdArgs))
 	terminal.CmdExecute(path, app, cmdArgs, true)
-}
-
-func Migrate(args []string) {
-	migrate.Up()
-	return
-	// path := "."
-	// res := utils.ArgsStruct{
-	// 	Prefix: "-c=",
-	// 	Args:   args,
-	// }
-	// if p := utils.ReadArgs("-p=", args); p != "" {
-	// 	path = p
-	// }
-
-	// res.AppAndArgs()
-	// appArgs := res.Result
-	// cmdArgs := []string{"run", "."}
-	// app := "migrate"
-	// if appArgs.App != "" {
-	// 	cmdArgs = appArgs.Args
-	// 	app = appArgs.App
-	// }
-	// logger.Info(fmt.Sprintf("Running command: %s %s\n", app, cmdArgs))
 }
 
 func UpdateApp() {
