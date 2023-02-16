@@ -3,6 +3,7 @@ package commands
 import (
 	"fmt"
 
+	"github.com/go-niom/niom/src/engine"
 	"github.com/go-niom/niom/src/handler"
 )
 
@@ -10,6 +11,8 @@ func Commands(args []string) {
 	cmd := args[1]
 
 	switch cmd {
+	case "init":
+		engine.CreateNiomCli("")
 	case "h", "-h", "help", "--help":
 		handler.Help()
 	case "v", "-v", "version", "--version":

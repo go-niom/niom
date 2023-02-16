@@ -155,6 +155,7 @@ type niomCli struct {
 	ModuleName string `json:"module_name"`
 	AppName    string `json:"app_name"`
 	SourceRoot string `json:"sourceRoot"`
+	ConfigFile string `json:"configFile"`
 }
 
 func GetNiomCliConfig() *niomCli {

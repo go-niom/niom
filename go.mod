@@ -7,6 +7,8 @@ require (
 	github.com/gookit/color v1.5.2
 )
 
+require github.com/joho/godotenv v1.5.1
+
 require (
 	github.com/lib/pq v1.10.7
 	github.com/xo/terminfo v0.0.0-20210125001918-ca9a967f8778 // indirect

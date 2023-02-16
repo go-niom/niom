@@ -1,10 +1,13 @@
 package engine
 
 import (
+	"errors"
 	"fmt"
+	"os"
 	"runtime"
 	"strings"
 
+	appLogger "github.com/go-niom/niom/pkg/logger"
 	"github.com/go-niom/niom/pkg/utils"
 	"github.com/go-niom/niom/res/misc"
 	"github.com/go-niom/niom/res/pkg/common"
@@ -26,7 +29,7 @@ func CreateInitialFiles(moduleName string) {
 	modFile(moduleName)
 
 	// create niom-cli.json config file
-	createNiomCli(moduleName)
+	CreateNiomCli(moduleName)
 
 	// create .env file with host and db examples
 	// create .dockerignore file with host and db examples
@@ -64,15 +67,33 @@ func CreateInitialFiles(moduleName string) {
 
 }
 
-func createNiomCli(moduleName string) {
-	appName := utils.GetAppName(moduleName)
-	config := `{
+func CreateNiomCli(moduleName string) {
+	if moduleName != "" {
+		appName := utils.GetAppName(moduleName)
+		config := `{
 	"module_name":"` + moduleName + `",
 	"app_name": "{{ .NameLowerCase}}",
 	"sourceRoot": "src"
+	"configFile": ".env"
 }
   `
-	utils.RenderWriteToFile(config, appName, appName+"/niom-cli.json")
+		utils.RenderWriteToFile(config, appName, appName+"/niom-cli.json")
+	} else {
+		if _, err := os.Stat("niom-cli.json"); errors.Is(err, os.ErrNotExist) {
+			config := `{
+	"module_name":"",
+	"app_name": "",
+	"sourceRoot": "src",
+	"configFile": ".env"
+}
+ `
+			utils.RenderWriteToFile(config, "", "niom-cli.json")
+		} else {
+			appLogger.Warn("Already Exist")
+		}
+
+	}
+
 }
 
 func modFile(appName string) {

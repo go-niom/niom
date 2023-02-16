@@ -1,8 +1,10 @@
 package commands
 
 import (
+	"github.com/go-niom/niom/pkg/config"
 	"github.com/go-niom/niom/pkg/logger"
 	"github.com/go-niom/niom/pkg/migrate"
+	"github.com/go-niom/niom/pkg/utils"
 )
 
 func create(args []string) {
@@ -62,11 +64,25 @@ $ niom migration down -a -p="database/test"
 `)
 }
 
+func dbInit() {
+	cfg := utils.GetNiomCliConfig()
+	if cfg != nil {
+		if cfg.ConfigFile == "" {
+			println("Please specify valid config file in niom-cli.json")
+			return
+		}
+		config.LoadAllConfigs(cfg.ConfigFile)
+	}
+
+}
+
 func migrations(args []string) {
 	if len(args) == 0 {
 		logger.Warn("Invalid Commands")
 		return
 	}
+	dbInit()
+
 	switch args[0] {
 	case "-h", "--help":
 		help()

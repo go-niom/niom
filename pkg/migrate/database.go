@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
+	"github.com/go-niom/niom/pkg/config"
 	"github.com/go-niom/niom/pkg/logger"
 	_ "github.com/lib/pq"
 )
@@ -16,8 +17,16 @@ var defaultDB = &DB{}
 
 // connect sets the db client of database using configuration
 func (db *DB) connect() (err error) {
-
-	db.DB, err = sql.Open("postgres", "postgresql://dev:passwd@127.0.0.1:5432/niom-local?sslmode=disable")
+	cfg := config.DBCfg()
+	dbURI := fmt.Sprintf("postgresql://%s:%s@%s:%d/%s?sslmode=%s",
+		cfg.User,
+		cfg.Password,
+		cfg.Host,
+		cfg.Port,
+		cfg.Name,
+		cfg.SslMode,
+	)
+	db.DB, err = sql.Open("postgres", dbURI)
 	if err != nil {
 		logger.Error("DB Connection Error", err.Error())
 	}
