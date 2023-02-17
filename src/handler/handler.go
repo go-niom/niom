@@ -12,6 +12,9 @@ import (
 	"github.com/gookit/color"
 )
 
+// NewApp initialize niom project with give project name
+// The project directory will be populated with scaffolds to manage and run the application
+// `niom new 'project_name'` may used to invoke this function
 func NewApp(cmd []string) {
 	if len(cmd) < 3 {
 		fmt.Print(`
@@ -27,6 +30,9 @@ Example usage:
 	Execute(moduleName)
 }
 
+// Welcome shows the niom ASCII banner
+// Niom Application details
+// `niom info` may used to invoke this function
 func Welcome() {
 	fmt.Println(`
 --------------------- Welcome to th world of ----------------------
@@ -43,10 +49,13 @@ func Welcome() {
 	fmt.Println("\nTry -h, --help  for usage information.")
 }
 
+// `niom -v` may used to invoke this function
 func Version() {
 	Welcome()
 }
 
+// Help shows the list available commands
+// `niom help` may used to invoke this function
 func Help() {
 	// info|i                                          Display Niom project details.
 	// update|u [options]                              Update Niom dependencies.
@@ -80,15 +89,19 @@ func Help() {
 	Example: niom g res user` + "\n")
 }
 
+// SwagInit initialize niom project with give project name
 func SwagInit(appName string) {
 	terminal.CmdExecute(appName, "go", []string{"install", "github.com/swaggo/swag/cmd/swag@latest"}, false)
 	SwagExecute(appName)
 }
 
+// SwagExecute regenerates swagger documentation
+// `niom sg` may used to invoke this function
 func SwagExecute(appName string) {
 	terminal.CmdExecute(appName, "swag", []string{"init"}, false)
 }
 
+// Execute install the dependencies
 func Execute(moduleName string) {
 	appName := utils.GetAppName(moduleName)
 	color.Greenln("\nInstalling dependencies....")
@@ -104,40 +117,35 @@ func Execute(moduleName string) {
 	color.Cyanln("🙏 Thanks for installing Niom 🙏\n")
 }
 
+// Info calls Welcome func. to show niom details
+func Info() {
+	Welcome()
+}
+
+// Build executes `go build .`
+// `niom build` may used to invoke this function
 func Build() {
 	terminal.CmdExecute(".", "go", []string{"build", "."}, false)
 }
 
+// Install executes `go install .`
+// `niom install` may used to invoke this function
+func Install(args []string) {
+	terminal.CmdExecute(".", "go", []string{"install", "."}, true)
+}
+
+// InstallDev executes `go install .` and watch the file changes
+// Whenever there is/are any files it reruns the `go install .`
+// `niom install:dev` may used to invoke this function
 func InstallDev(args []string) {
 	watcher.Watch()
 	terminal.CmdExecute(".", "go", []string{"install", "."}, true)
 	<-terminal.TerminalChannel
 }
 
-func Install(args []string) {
-	terminal.CmdExecute(".", "go", []string{"install", "."}, true)
-}
-
-func Info() {
-	Welcome()
-}
-
-func Generate() {
-	fmt.Println("Generate app")
-}
-
-func SpinUp(appName string) {
-	watcher.Watch()
-	terminal.CmdExecute(appName, "go", []string{"run", "."}, false)
-}
-
-func Dev(args []string) {
-	watcher.Watch()
-	Start(args)
-	// terminal.CmdExecute(".", "go", []string{"run", "."})
-	<-terminal.TerminalChannel
-}
-
+// Start executes `go run .` by default
+// User may specify the path and the command to be run
+// `niom start` may used to invoke this function
 func Start(args []string) {
 	path := "."
 	res := utils.ArgsStruct{
@@ -160,6 +168,23 @@ func Start(args []string) {
 	terminal.CmdExecute(path, app, cmdArgs, true)
 }
 
+// Dev invoke Start func. file watcher mode
+// Whenever there is/are any files it recall the Start func
+// `niom start:dev` may used to invoke this function
+func Dev(args []string) {
+	watcher.Watch()
+	Start(args)
+	// terminal.CmdExecute(".", "go", []string{"run", "."})
+	<-terminal.TerminalChannel
+}
+
+// Update niom app
 func UpdateApp() {
 	terminal.CmdExecute(".", "go", []string{"install", "github.com/go-niom/niom@latest"}, false)
+}
+
+// TODO future use
+func SpinUp(appName string) {
+	watcher.Watch()
+	terminal.CmdExecute(appName, "go", []string{"run", "."}, false)
 }

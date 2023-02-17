@@ -1,12 +1,15 @@
+/*
+This file dedicated to intercept command related to the migration
+*/
 package commands
 
 import (
 	"github.com/go-niom/niom/pkg/config"
 	"github.com/go-niom/niom/pkg/logger"
 	"github.com/go-niom/niom/pkg/migrate"
-	"github.com/go-niom/niom/pkg/utils"
 )
 
+// create functions creates the migrations file
 func create(args []string) {
 	if len(args) == 0 {
 		logger.Error("Please specify `file name` or -s (to generate sample)", "")
@@ -21,10 +24,12 @@ func create(args []string) {
 
 }
 
+// up runs the migrations
 func up(args []string) {
 	migrate.Up(args)
 }
 
+// down rollback the latest migration
 func down(args []string) {
 	if len(args) > 0 {
 		migrate.Down(args[0], args)
@@ -33,6 +38,8 @@ func down(args []string) {
 	}
 
 }
+
+// help shows available commands and arguments of the migrations command
 func help() {
 	println(`
 #To create posts migration files 
@@ -64,24 +71,31 @@ $ niom migration down -a -p="database/test"
 `)
 }
 
-func dbInit() {
-	cfg := utils.GetNiomCliConfig()
+// dbInit initialize user database read credentials from the specified env file in the niom-cli.json
+func dbInit() string {
+	cfg := config.GetNiomCliConfig()
 	if cfg != nil {
 		if cfg.ConfigFile == "" {
 			println("Please specify valid config file in niom-cli.json")
-			return
+			return ""
 		}
 		config.LoadAllConfigs(cfg.ConfigFile)
+		return ""
 	}
+	return "Error"
 
 }
 
+// migrations() validate the user input
+// and direct to do specified cmd to execute
 func migrations(args []string) {
 	if len(args) == 0 {
 		logger.Warn("Invalid Commands")
 		return
 	}
-	dbInit()
+	if s := dbInit(); s != "" {
+		return
+	}
 
 	switch args[0] {
 	case "-h", "--help":

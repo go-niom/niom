@@ -50,16 +50,17 @@ func GetDB() *DB {
 	return defaultDB
 }
 
+// Execute sql queries
 func (db *DB) Execute(sql string) error {
 	_, err := db.Exec(sql)
 	if err != nil {
 		logger.Error("Execution Failed", err.Error())
 		return err
 	}
-
 	return nil
 }
 
+// Delete row with Given file dedicated to the migration task
 func (db *DB) DeleteRow(fileName string) error {
 	_, err := db.Exec(`DELETE FROM migration_scheme WHERE file_name = $1`, fileName)
 	if err != nil {

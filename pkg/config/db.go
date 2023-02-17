@@ -27,6 +27,8 @@ func DBCfg() *DB {
 }
 
 // LoadDBCfg loads DB configuration
+// This load db config from env file
+// If not it set the default value
 func LoadDBCfg() {
 	db.Host = getEnv("DB_HOST", "127.0.0.1")
 	db.Port, _ = strconv.Atoi(getEnv("DB_PORT", "5432"))

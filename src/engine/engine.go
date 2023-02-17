@@ -73,7 +73,7 @@ func CreateNiomCli(moduleName string) {
 		config := `{
 	"module_name":"` + moduleName + `",
 	"app_name": "{{ .NameLowerCase}}",
-	"sourceRoot": "src"
+	"sourceRoot": "src",
 	"configFile": ".env"
 }
   `
@@ -147,17 +147,20 @@ func appMiddleware(moduleName string) {
 	utils.RenderWriteToFileModule(middleware.MiddlewareFiber, directory+"/fiber.go", "middleware", moduleName)
 }
 
+// appUtils creates utils.go related files
 func appHelper(appName string) {
-	directory := appName + "/pkg/helpers"
+	directory := appName + "/pkg/response"
 	utils.RenderWriteToFile(response.HelperResponse, appName, directory+"/response.go")
 }
 
+// appUtils creates utils.go related files
 func appUtils(moduleName string) {
 	appName := utils.GetAppName(moduleName)
 	directory := appName + "/pkg/utils"
 	utils.RenderWriteToFileModule(pkgUtils.PkgUtils, directory+"/utils.go", "utils", moduleName)
 }
 
+// createServer creates server.go related files
 func createServer(moduleName string) {
 	appName := utils.GetAppName(moduleName)
 	directory := appName + "/server"
@@ -167,6 +170,7 @@ func createServer(moduleName string) {
 	utils.RenderWriteToFileModule(server.Middleware, directory+"/middleware.go", "server", moduleName)
 }
 
+// create scaffold inside the src/app directory
 func create(moduleName, resName string) {
 	appName := utils.GetAppName(moduleName)
 	dir := appName + "/src/app/"

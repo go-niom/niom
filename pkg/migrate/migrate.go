@@ -2,43 +2,42 @@ package migrate
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
-	"os"
-	"sort"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/go-niom/niom/pkg/logger"
 	"github.com/go-niom/niom/pkg/utils"
-	"github.com/go-niom/niom/res/db/blog"
 	"github.com/gookit/color"
 	_ "github.com/lib/pq"
 )
 
-type MigrationScheme struct {
-	ID        int       `db:"id"`
-	FileName  string    `db:"file_name"`
-	Batch     string    `db:"batch"`
-	CreatedAt time.Time `db:"created_at"`
-}
-
+// Up migrates the migrations files
+// `niom migration up` may used to invoke this function
 func Up(args []string) {
+
+	//indicates migration started
 	logger.Info("Migration started")
 	pattern := "up.sql"
 
+	//check for migration path in the args or set db/migrations/ as default migration path
 	dir := getMigrationPath("db/migrations/", args)
+
+	//fileList holds all files from migration path
 	fileList := getFilesAscendingOrder(dir, pattern)
 	if fileList == nil {
 		logger.Warn("Migration files are not available.")
 	}
 
+	//initialize db
 	db := GetDB()
 	if db == nil {
 		return
 	}
 	var err error
+
+	//fetch latest migration from migration_scheme table
 	res := db.QueryRow(`SELECT file_name,batch from migration_scheme order by id desc`)
 	if res.Err() != nil {
 		if strings.Contains(res.Err().Error(), "does not") {
@@ -52,16 +51,18 @@ func Up(args []string) {
 	var selectedMigration MigrationScheme
 	res.Scan(&selectedMigration.FileName, &selectedMigration.Batch)
 
+	//this function do migration and store migration information into the migration_scheme table
 	migrator := func(fileName, filePath string) error {
 
+		// readfile and run the execution
 		err = readFileAndMigrate(db, filePath)
 		if err != nil {
 			logger.Error("Failed :", err.Error())
 			return err
 		}
 		timestamp := time.Now().Format("20060102150405")
-		// INSERT a new row into the migration_scheme table
 
+		// INSERT a new row into the migration_scheme table
 		migration := MigrationScheme{
 			FileName:  fileName,
 			Batch:     timestamp,
@@ -84,6 +85,8 @@ func Up(args []string) {
 			last, _ = strconv.ParseInt(strings.Split(selectedMigration.FileName, "_")[0], 10, 64)
 			current, _ = strconv.ParseInt(strings.Split(file, "_")[0], 10, 64)
 		}
+		//compare latest executed file with new file in the migration directory
+		//call migrator func. to migrate latest file from the migration directory
 		if (current > last) || !hasLastFile {
 			fileToBeMigrated := fmt.Sprintf("%s/%s", dir, file)
 			err := migrator(file, fileToBeMigrated)
@@ -93,14 +96,127 @@ func Up(args []string) {
 			hasMigration = true
 		}
 	}
+
+	//check migration was there or not and log appropriate message
 	if hasMigration {
 		logger.Info("Migration completed")
 	} else {
 		logger.Warn("Nothing new to Migrate")
 	}
-
 }
 
+// Down rollback the latest migration
+// `niom migration down` may used to invoke this function
+func Down(arg string, args []string) {
+
+	//indicates rollback started
+	logger.Info("Rollback...")
+
+	//check for migration path in the args or set db/migrations/ as default migration path
+	dir := getMigrationPath("db/migrations/", args)
+
+	//check rollback all file or not
+	isMulti := arg == "-a"
+
+	//initialize db
+	db := GetDB()
+	if db == nil {
+		return
+	}
+	var err error
+
+	//fetch all migration from migration_scheme table
+	rows, err := db.Query(`SELECT file_name,batch from migration_scheme order by id desc`)
+	if err != nil {
+		if strings.Contains(err.Error(), "does not") {
+			err := createMigrationTable(db)
+			if err != nil {
+				logger.Error("", err.Error())
+				return
+			}
+		}
+	}
+
+	//holds the list migrations fetch from the db
+	var selectedMigration []MigrationScheme
+	for rows.Next() {
+		var s MigrationScheme
+		err := rows.Scan(&s.FileName, &s.Batch)
+		if err != nil {
+			log.Fatal(err)
+		}
+		selectedMigration = append(selectedMigration, s)
+		if !isMulti {
+			break
+		}
+	}
+
+	//this function do migration and store migration information into the migration_scheme table
+	migrator := func(fileName, filePath string) error {
+
+		err = readFileAndMigrate(db, filePath)
+		if err != nil {
+			logger.Error("Failed :", err.Error())
+			return err
+		}
+
+		// delete the rollback row form the database
+		err = db.DeleteRow(fileName)
+		if err != nil {
+			panic(err)
+		}
+
+		//log rollback file details
+		logger.Info("Rollback: " + filePath)
+		return nil
+	}
+	var fileDirs []map[string]string
+	for _, ms := range selectedMigration {
+
+		// Changing the name from .up. to .down.
+		fileName := strings.ReplaceAll(ms.FileName, ".up.", ".down.")
+		fileToBeMigrated := fmt.Sprintf("%s/%s", dir, fileName)
+		color.Warnf("File: %s\n", fileName)
+
+		// Create the list of file to be rollback
+		fileDir := map[string]string{
+			"fileName": ms.FileName,
+			"filePath": fileToBeMigrated,
+		}
+		fileDirs = append(fileDirs, fileDir)
+	}
+
+	color.Warnp("\nDo you want to proceed with the Rollback (Y/N)? ")
+	//wait for the user confirmation
+	value := utils.UserPrompt("")
+
+	//check for the user response
+	if strings.ToUpper(strings.Trim(value, " ")) == "Y" {
+		logger.Info("Rollback entered")
+		for _, v := range fileDirs {
+			migrator(v["fileName"], v["filePath"])
+			if err != nil {
+				return
+			}
+		}
+		return
+	}
+	logger.Info("Rollback aborted")
+}
+
+// CreateSample create blogs migration sample
+// `niom migration -s` invokes this function
+// `niom migration -s seed` may be used generate insert statement
+func CreateSample(args []string) {
+	isSeed := false
+	if len(args) > 0 && args[0] == "seed" {
+		isSeed = true
+	}
+	pgSqlBlog(isSeed, args)
+}
+
+// Status fetch the migration details from the db
+// `niom migration status` invokes this function
 func Status() {
 	db := GetDB()
 	if db == nil {
@@ -131,87 +247,8 @@ func Status() {
 	logger.Info(fmt.Sprintf("Total No. of Migration: %d", count))
 }
 
-func Down(arg string, args []string) {
-	logger.Info("Rollback...")
-	dir := getMigrationPath("db/migrations/", args)
-	isMulti := arg == "-a"
-	db := GetDB()
-	if db == nil {
-		return
-	}
-	var err error
-	rows, err := db.Query(`SELECT file_name,batch from migration_scheme order by id desc`)
-	if err != nil {
-		if strings.Contains(err.Error(), "does not") {
-			err := createMigrationTable(db)
-			if err != nil {
-				logger.Error("", err.Error())
-				return
-			}
-		}
-	}
-
-	var selectedMigration []MigrationScheme
-
-	for rows.Next() {
-		var s MigrationScheme
-		err := rows.Scan(&s.FileName, &s.Batch)
-		if err != nil {
-			log.Fatal(err)
-		}
-		selectedMigration = append(selectedMigration, s)
-		if !isMulti {
-			break
-		}
-	}
-
-	// res.Scan(&selectedMigration.FileName, &selectedMigration.Batch)
-
-	migrator := func(fileName, filePath string) error {
-
-		err = readFileAndMigrate(db, filePath)
-		if err != nil {
-			logger.Error("Failed :", err.Error())
-			return err
-		}
-
-		err = db.DeleteRow(fileName)
-		if err != nil {
-			panic(err)
-		}
-		logger.Info("Rollback: " + filePath)
-		return nil
-	}
-	var fileDirs []map[string]string
-	for _, ms := range selectedMigration {
-
-		fileName := strings.ReplaceAll(ms.FileName, ".up.", ".down.")
-		fileToBeMigrated := fmt.Sprintf("%s/%s", dir, fileName)
-		color.Warnf("File: %s\n", fileName)
-
-		fileDir := map[string]string{
-			"fileName": ms.FileName,
-			"filePath": fileToBeMigrated,
-		}
-		fileDirs = append(fileDirs, fileDir)
-	}
-
-	color.Warnp("\nDo you want to proceed with the Rollback (Y/N)? ")
-	value := utils.UserPrompt("")
-
-	if string([]byte(strings.ToUpper(strings.Trim(value, " ")))) == "Y" {
-		logger.Info("Rollback entered")
-		for _, v := range fileDirs {
-			migrator(v["fileName"], v["filePath"])
-			if err != nil {
-				return
-			}
-		}
-		return
-	}
-	logger.Info("Rollback aborted")
-}
-
+// CreateWithPath creates migration file with give fileName and filePath
+// It also accept up and down scripts to add into file while creating it.
 func CreateWithPath(fileName, filePath, up, dn string) {
 	timestamp := time.Now().Format("20060102150405") // format timestamp as yyyymmddHHMMSS
 	upFile := fmt.Sprintf("%s_%s.%s", timestamp, fileName, "up.sql")
@@ -220,100 +257,9 @@ func CreateWithPath(fileName, filePath, up, dn string) {
 	utils.CreateFileWithData(filePath+downFile, "BEGIN;\n"+dn+"\nCOMMIT;")
 }
 
-func getMigrationPath(filePath string, args []string) string {
-	argsPath := utils.ReadArgs("-p=", args)
-	if argsPath != "" {
-		filePath = argsPath
-		if !strings.HasSuffix(filePath, "/") {
-			filePath = filePath + "/"
-		}
-	}
-	return filePath
-}
-
+// Create is the parent func of CreateWithPath
+// Checks migration path in the args if not then set db/migrations/ as default
 func Create(args []string, fileName string, up, dn string) {
 	filePath := getMigrationPath("db/migrations/", args)
 	CreateWithPath(fileName, filePath, up, dn)
-}
-
-func CreateSample(args []string) {
-	isSeed := false
-	if len(args) > 0 && args[0] == "seed" {
-		isSeed = true
-	}
-
-	pgSqlBlog(isSeed, args)
-}
-
-func pgSqlBlog(isSeed bool, args []string) {
-
-	if !isSeed {
-		Create(args, "users", blog.PGCreateUsersTable, blog.PGDropUsersTable)
-		Create(args, "categories", blog.PGCreateCategoriesTable, blog.PGDropCategoriesTable)
-		Create(args, "posts", blog.PGCreatePostTable, blog.PGDropPostTable)
-		Create(args, "comments", blog.PGCreateCommentTable, blog.PGDropCommentTable)
-		time.Sleep(1 * time.Second)
-		Create(args, "table_alter", blog.PGBlogAlter, blog.PGBlogOppositeAlter)
-	} else {
-		Create(args, "users", blog.PGCreateUsersTable+"\n"+blog.PGBlogUserInsert, blog.PGDropUsersTable)
-		Create(args, "categories", blog.PGCreateCategoriesTable+"\n"+blog.PGBlogCategoriesInsert, blog.PGDropCategoriesTable)
-		Create(args, "posts", blog.PGCreatePostTable+"\n"+blog.PGBlogPostInsert, blog.PGDropPostTable)
-		Create(args, "comments", blog.PGCreateCommentTable+"\n"+blog.PGBlogCommentInsert, blog.PGDropCommentTable)
-		time.Sleep(1 * time.Second)
-		Create(args, "table_alter", blog.PGBlogAlter, blog.PGBlogOppositeAlter)
-	}
-}
-
-func readFileAndMigrate(db *DB, filePath string) error {
-	// read the SQL file contents
-	content, err := ioutil.ReadFile(filePath)
-	if err != nil {
-		return err
-	}
-
-	// execute the SQL commands to create the table
-	return db.Execute(string(content))
-
-}
-
-func createMigrationTable(db *DB) error {
-	miTable := `
-	CREATE TABLE migration_scheme (
-		id SERIAL PRIMARY KEY,
-		file_name VARCHAR(255) NOT NULL,
-		batch VARCHAR(255) NOT NULL,
-		created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-	  );`
-	_, err := db.Exec(miTable)
-	if err != nil {
-		logger.Error("Execution Failed", err.Error())
-		return err
-	}
-	return nil
-}
-
-func getFilesAscendingOrder(dir string, pattern string) []string {
-
-	files, err := os.ReadDir(dir)
-	if err != nil {
-		fmt.Println("Error reading directory:", err)
-		return nil
-	}
-
-	// Filter files by name ending with pattern
-
-	var sortedFiles []string
-	for _, file := range files {
-		if strings.HasSuffix(file.Name(), pattern) {
-			sortedFiles = append(sortedFiles, file.Name())
-		}
-	}
-
-	// Sort files by name in ascending order
-	sort.Slice(sortedFiles, func(i, j int) bool {
-		return sortedFiles[i] < sortedFiles[j]
-	})
-
-	// Return the sorted files with the pattern
-	return sortedFiles
 }

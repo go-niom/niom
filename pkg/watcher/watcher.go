@@ -17,6 +17,7 @@ var (
 	WatcherChannel chan string
 )
 
+// init initializes the channel to watch changes in the files
 func init() {
 	WatcherChannel = make(chan string, 1000)
 }
@@ -59,8 +60,6 @@ func watchFolder(path string) {
 			}
 		}
 	}()
-
-	// watcherLog("Watching %s", path)
 	err = watcher.Add(path)
 
 	if err != nil {
@@ -68,6 +67,7 @@ func watchFolder(path string) {
 	}
 }
 
+// Watch keep tracks of the files and notify when there are any changes in the files
 func Watch() {
 	logger.Info("watching path(s): *.*")
 	logger.Info("watching extensions: *")

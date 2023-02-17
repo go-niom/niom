@@ -18,7 +18,7 @@ type {{ .NameLowerCase}}Controller struct {
 type {{ .NameLowerCase}}ControllerInterface interface {
 	Create{{ .Name}}(*fiber.Ctx) error
 	GetAll{{ .Name}}(*fiber.Ctx) error
-	Get{{ .Name}}ById(*fiber.Ctx) error/{{ .NameLowerCase}}
+	Get{{ .Name}}ById(*fiber.Ctx) error
 	Update{{ .Name}}(*fiber.Ctx) error
 	Delete{{ .Name}}(*fiber.Ctx) error
 }

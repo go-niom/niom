@@ -1,16 +1,22 @@
+/*
+This file dedicated to intercept command related to the generate
+*/
 package commands
 
 import (
 	"fmt"
 
+	"github.com/go-niom/niom/pkg/config"
 	"github.com/go-niom/niom/pkg/logger"
 	"github.com/go-niom/niom/pkg/utils"
 	"github.com/go-niom/niom/res/src"
 	"github.com/go-niom/niom/src/engine"
 )
 
+// generate() validate the user input
+// and direct to do specified cmd to execute
 func generate(cmd string, args []string) {
-	niomConfig := utils.GetNiomCliConfig()
+	niomConfig := config.GetNiomCliConfig()
 	if niomConfig == nil {
 		return
 	}

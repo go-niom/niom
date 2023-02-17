@@ -7,6 +7,8 @@ import (
 	"github.com/go-niom/niom/src/handler"
 )
 
+// Commands check and intercept user entered commands
+// As per the user this function redirects to the function to carry the task
 func Commands(args []string) {
 	cmd := args[1]
 
@@ -34,7 +36,7 @@ func Commands(args []string) {
 	case "start":
 		handler.Start(args[2:])
 	case "install":
-		handler.InstallDev(args[2:])
+		handler.Install(args[2:])
 	case "install:dev":
 		handler.InstallDev(args[2:])
 	case "migration":

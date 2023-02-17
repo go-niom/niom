@@ -29,6 +29,7 @@ type TerminalCmd struct {
 	ShowMessage bool
 }
 
+// KillFunc kills the shell started by the Execute
 func KillFunc() error {
 	PID, err := syscall.Getpgid(cmd.Process.Pid)
 	if err == nil {
@@ -58,7 +59,7 @@ func initSignal() {
 	}()
 }
 
-// CMD Exit check
+// cmdErrors handles the thrown by the shell
 func (term *TerminalCmd) cmdErrors(err error) error {
 	if (err.Error() == "signal: terminated") && IsCodeUpdated {
 		logger.Info("Restarting....")
@@ -75,6 +76,7 @@ func (term *TerminalCmd) cmdErrors(err error) error {
 	return err
 }
 
+// Execute executes shell command
 func (term *TerminalCmd) Execute() error {
 	//check command has args
 	if len(term.Args) > 0 {
@@ -125,6 +127,8 @@ func (term *TerminalCmd) Execute() error {
 	return nil
 }
 
+// CmdExecute trigger the Execute function
+// Also init the signal to check signal notification
 func CmdExecute(dir, app string, args []string, showMessage bool) {
 	initSignal()
 	TermCmd = TerminalCmd{
