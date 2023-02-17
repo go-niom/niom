@@ -1,4 +1,4 @@
 package constants
 
 const AppSign = "[NIOM]"
-const AppVersion = "v0.1.5"
+const AppVersion = "v0.1.7"
