@@ -16,8 +16,6 @@ const MiscReadme = `
 ` + "```bash \n$ go mod tidy\n```" + `
 ## Running the app
 ` + "```bash\n# development mode\n$ niom start:dev\n# spin up\n$ niom start .\n```" + `
-## Test 
-` + "\n```bash \n# unit tests \n$ go test packageName\n```" + `
 
 ## Support
 
@@ -26,7 +24,7 @@ Niom is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## Stay in touch
 
 - Author - [Nirmal Mandal](https://www.linkedin.com/in/nirmal-mandal-275706110)
-- Website - [https://go-niom.com](https://go-niom.com/)
+- Website - [https://go-niom.com](https://go-niom.github.io/niom-docs/)
 - Twitter - [@niomframework](https://twitter.com/niomframework)
 
 ## License
