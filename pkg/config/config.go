@@ -6,9 +6,9 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// LoadAllConfigs set various configs
 // This function dedicated to the read env file from the project directory
 // Expect env file path from where env will loaded using godotev package
+// LoadAllConfigs set various configs
 func LoadAllConfigs(envFile string) {
 
 	//Loads env variable from the env file

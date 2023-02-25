@@ -23,7 +23,7 @@ func Serve() {
 	fiberCfg := config.FiberConfig()
 	app := fiber.New(fiberCfg)
 
-	//initial the connecters
+	//initialize the connecters
 	initConnectors()
 
 	//Attach Middleware

@@ -19,6 +19,7 @@ type TemplateArgs struct {
 	Name          string
 	NameLowerCase string
 	ModuleName    string
+	PackageName   string
 }
 
 // CreateFileWithData creates file at given directory with passed data
@@ -68,7 +69,7 @@ func UserPrompt(message string) string {
 	scanner.Scan()
 	// Get the text from the scanned line
 	input := scanner.Text()
-	return input
+	return strings.Trim(input, " ")
 }
 
 // RenderWriteToFile creates src files
@@ -78,8 +79,8 @@ func RenderWriteToFile(tmpl string, func_name string, file_name string) {
 }
 
 // RenderWriteToFileModule creates src module files
-func RenderWriteToFileModule(tmpl, fileName, packageName, module_name string) {
-	td := TemplateArgs{Name: strings.Title(packageName), NameLowerCase: packageName, ModuleName: module_name}
+func RenderWriteToFileModule(tmpl, fileName, resName, module_name, packageName string) {
+	td := TemplateArgs{Name: strings.Title(resName), NameLowerCase: resName, ModuleName: module_name, PackageName: packageName}
 	renderWrite(td, tmpl, fileName)
 }
 

@@ -7,16 +7,16 @@ import (
 	"github.com/go-niom/niom/pkg/logger"
 )
 
-// niomCli holds niom-app details
-type niomCli struct {
+// NiomCli holds niom-app details
+type NiomCli struct {
 	ModuleName string `json:"module_name"`
 	AppName    string `json:"app_name"`
-	SourceRoot string `json:"sourceRoot"`
-	ConfigFile string `json:"configFile"`
+	SourceRoot string `json:"source_root"`
+	ConfigFile string `json:"config_file"`
 }
 
 // GetNiomCliConfig return niom-app details
-func GetNiomCliConfig() *niomCli {
+func GetNiomCliConfig() *NiomCli {
 
 	// Reads app details from niom-cli.json
 	data, err := os.ReadFile("./niom-cli.json")
@@ -26,8 +26,8 @@ func GetNiomCliConfig() *niomCli {
 		return nil
 	}
 
-	niomCli := niomCli{}
-	// Unmarshals niom-cli.json content to the niomCli variable
+	niomCli := NiomCli{}
+	// Unmarshals niom-cli.json content to the NiomCli variable
 	err = json.Unmarshal(data, &niomCli)
 
 	if err != nil {

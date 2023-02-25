@@ -73,8 +73,8 @@ func CreateNiomCli(moduleName string) {
 		config := `{
 	"module_name":"` + moduleName + `",
 	"app_name": "{{ .NameLowerCase}}",
-	"sourceRoot": "src",
-	"configFile": ".env"
+	"source_root": "src",
+	"config_file": ".env"
 }
   `
 		utils.RenderWriteToFile(config, appName, appName+"/niom-cli.json")
@@ -83,8 +83,8 @@ func CreateNiomCli(moduleName string) {
 			config := `{
 	"module_name":"",
 	"app_name": "",
-	"sourceRoot": "src",
-	"configFile": ".env"
+	"source_root": "src",
+	"config_file": ".env"
 }
  `
 			utils.RenderWriteToFile(config, "", "niom-cli.json")
@@ -132,19 +132,19 @@ func createConfigFiles(appName string) {
 func loggerFile(moduleName string) {
 	appName := utils.GetAppName(moduleName)
 	directory := appName + "/pkg/logger"
-	utils.RenderWriteToFileModule(logger.Logger, directory+"/logger.go", "logger", moduleName)
+	utils.RenderWriteToFileModule(logger.Logger, directory+"/logger.go", "logger", moduleName, "")
 }
 
 func appCommonFile(moduleName string) {
 	appName := utils.GetAppName(moduleName)
 	directory := appName + "/pkg/common"
-	utils.RenderWriteToFileModule(common.CommonRouter, directory+"/common.go", "common", moduleName)
+	utils.RenderWriteToFileModule(common.CommonRouter, directory+"/common.go", "common", moduleName, "")
 }
 
 func appMiddleware(moduleName string) {
 	appName := utils.GetAppName(moduleName)
 	directory := appName + "/pkg/middleware"
-	utils.RenderWriteToFileModule(middleware.MiddlewareFiber, directory+"/fiber.go", "middleware", moduleName)
+	utils.RenderWriteToFileModule(middleware.MiddlewareFiber, directory+"/fiber.go", "middleware", moduleName, "")
 }
 
 // appUtils creates utils.go related files
@@ -157,32 +157,32 @@ func appHelper(appName string) {
 func appUtils(moduleName string) {
 	appName := utils.GetAppName(moduleName)
 	directory := appName + "/pkg/utils"
-	utils.RenderWriteToFileModule(pkgUtils.PkgUtils, directory+"/utils.go", "utils", moduleName)
+	utils.RenderWriteToFileModule(pkgUtils.PkgUtils, directory+"/utils.go", "utils", moduleName, "")
 }
 
 // createServer creates server.go related files
 func createServer(moduleName string) {
 	appName := utils.GetAppName(moduleName)
 	directory := appName + "/server"
-	utils.RenderWriteToFileModule(server.Server, directory+"/server.go", "server", moduleName)
-	utils.RenderWriteToFileModule(server.Routers, directory+"/router.go", "server", moduleName)
-	utils.RenderWriteToFileModule(server.Connectors, directory+"/connecters.go", "server", moduleName)
-	utils.RenderWriteToFileModule(server.Middleware, directory+"/middleware.go", "server", moduleName)
+	utils.RenderWriteToFileModule(server.Server, directory+"/server.go", "server", moduleName, "")
+	utils.RenderWriteToFileModule(server.Routers, directory+"/router.go", "server", moduleName, "")
+	utils.RenderWriteToFileModule(server.Connectors, directory+"/connecters.go", "server", moduleName, "")
+	utils.RenderWriteToFileModule(server.Middleware, directory+"/middleware.go", "server", moduleName, "")
 }
 
 // create scaffold inside the src/app directory
 func create(moduleName, resName string) {
 	appName := utils.GetAppName(moduleName)
-	dir := appName + "/src/app/"
+	dir := appName + "/src/" + resName + "/"
 	CreateResource(moduleName, dir, resName)
 }
 
 func CreateResource(moduleName, dir, resName string) {
 	directoryFile := dir + resName
-	utils.RenderWriteToFileModule(src.ControllerTmpl, directoryFile+".controller.go", resName, moduleName)
-	utils.RenderWriteToFileModule(src.ServiceTmpl, directoryFile+".service.go", resName, moduleName)
-	utils.RenderWriteToFileModule(src.RouterTmpl, directoryFile+".router.go", resName, moduleName)
+	utils.RenderWriteToFileModule(src.ControllerTmpl, directoryFile+".controller.go", resName, moduleName, "")
+	utils.RenderWriteToFileModule(src.ServiceTmpl, directoryFile+".service.go", resName, moduleName, "")
+	utils.RenderWriteToFileModule(src.RouterTmpl, directoryFile+".router.go", resName, moduleName, "")
 
-	utils.RenderWriteToFileModule(src.DTO, dir+"dto/"+resName+".dto.go", resName, moduleName)
-	utils.RenderWriteToFileModule(src.Model, dir+"model/"+resName+".model.go", resName, moduleName)
+	utils.RenderWriteToFileModule(src.DTO, dir+"dto/"+resName+".dto.go", resName, moduleName, "")
+	utils.RenderWriteToFileModule(src.Model, dir+"model/"+resName+".model.go", resName, moduleName, "")
 }

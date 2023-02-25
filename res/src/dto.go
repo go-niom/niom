@@ -1,6 +1,6 @@
 package src
 
-var DTO = `package {{ .NameLowerCase}}
+var DTO = `package dto
 
 type Create{{ .Name}}Dto struct {
 	Sample string` + "`json:\"sample,omitempty\"`\n" +
