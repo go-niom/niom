@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"os/signal"
+	"runtime"
 	"sync"
 	"syscall"
 
@@ -30,16 +31,30 @@ type TerminalCmd struct {
 }
 
 // KillFunc kills the shell started by the Execute
+// KillFunc kills the shell started by the Execute
 func KillFunc() error {
-	PID, err := syscall.Getpgid(cmd.Process.Pid)
-	if err == nil {
-		logger.Warn("Killing App runner")
-		if errKill := syscall.Kill(-PID, 15); errKill != nil {
-			return errKill
+	if runtime.GOOS != "windows" {
+		if cmd.ProcessState == nil {
+			logger.Warn("Killing App runner")
+			if errKill := cmd.Process.Kill(); errKill != nil {
+				return errKill
+			}
 		}
-	}
-	if PID < 0 && !isUserExit {
-		go TermCmd.Execute()
+
+		if cmd.ProcessState != nil && !isUserExit {
+			go TermCmd.Execute()
+		}
+	} else {
+		PID, err := syscall.Getpgid(cmd.Process.Pid)
+		if err == nil {
+			logger.Warn("Killing App runner")
+			if errKill := syscall.Kill(-PID, syscall.SIGTERM); errKill != nil {
+				return errKill
+			}
+		}
+		if PID < 0 && !isUserExit {
+			go TermCmd.Execute()
+		}
 	}
 	return nil
 }
