@@ -138,7 +138,7 @@ func Install(args []string) {
 // Whenever there is/are any files it reruns the `go install .`
 // `niom install:dev` may used to invoke this function
 func InstallDev(args []string) {
-	watcher.Watch()
+	watcher.Watch(args)
 	terminal.CmdExecute(".", "go", []string{"install", "."}, true)
 	<-terminal.TerminalChannel
 }
@@ -172,7 +172,7 @@ func Start(args []string) {
 // Whenever there is/are any files it recall the Start func
 // `niom start:dev` may used to invoke this function
 func Dev(args []string) {
-	watcher.Watch()
+	watcher.Watch(args)
 	Start(args)
 	// terminal.CmdExecute(".", "go", []string{"run", "."})
 	<-terminal.TerminalChannel
@@ -185,6 +185,6 @@ func UpdateApp() {
 
 // TODO future use
 func SpinUp(appName string) {
-	watcher.Watch()
+	watcher.Watch([]string{})
 	terminal.CmdExecute(appName, "go", []string{"run", "."}, false)
 }

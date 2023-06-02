@@ -30,8 +30,11 @@ func Up(args []string) {
 		logger.Warn("Migration files are not available.")
 	}
 
-	//initialize db
-	db := GetDB()
+	// read db url from args
+	dbUrl := utils.ReadArgs("-d=", args)
+
+	// initialize db
+	db := GetDB(dbUrl)
 	if db == nil {
 		return
 	}
@@ -118,8 +121,11 @@ func Down(arg string, args []string) {
 	//check rollback all file or not
 	isMulti := arg == "-a"
 
+	// read db url from args
+	dbUrl := utils.ReadArgs("-d=", args)
+
 	//initialize db
-	db := GetDB()
+	db := GetDB(dbUrl)
 	if db == nil {
 		return
 	}
@@ -217,8 +223,12 @@ func CreateSample(args []string) {
 
 // Status fetch the migration details from the db
 // `niom migration status` invokes this function
-func Status() {
-	db := GetDB()
+func Status(args []string) {
+	// read db url from args
+	dbUrl := utils.ReadArgs("-d=", args)
+
+	//initialize db
+	db := GetDB(dbUrl)
 	if db == nil {
 		return
 	}

@@ -16,16 +16,20 @@ type DB struct{ *sql.DB }
 var defaultDB = &DB{}
 
 // connect sets the db client of database using configuration
-func (db *DB) connect() (err error) {
+func (db *DB) connect(dbURI string) (err error) {
 	cfg := config.DBCfg()
-	dbURI := fmt.Sprintf("postgresql://%s:%s@%s:%d/%s?sslmode=%s",
-		cfg.User,
-		cfg.Password,
-		cfg.Host,
-		cfg.Port,
-		cfg.Name,
-		cfg.SslMode,
-	)
+
+	if dbURI == "" {
+		dbURI = fmt.Sprintf("postgresql://%s:%s@%s:%d/%s?sslmode=%s",
+			cfg.User,
+			cfg.Password,
+			cfg.Host,
+			cfg.Port,
+			cfg.Name,
+			cfg.SslMode,
+		)
+	}
+
 	db.DB, err = sql.Open("postgres", dbURI)
 	if err != nil {
 		logger.Error("DB Connection Error", err.Error())
@@ -42,9 +46,10 @@ func (db *DB) connect() (err error) {
 }
 
 // GetDB returns db instance
-func GetDB() *DB {
-	err := defaultDB.connect()
+func GetDB(dbUrl string) *DB {
+	err := defaultDB.connect(dbUrl)
 	if err != nil {
+		logger.Error("Execution Failed", err.Error())
 		return nil
 	}
 	return defaultDB

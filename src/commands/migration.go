@@ -107,7 +107,7 @@ func migrations(args []string) {
 	case "down":
 		down(args[1:])
 	case "status":
-		migrate.Status()
+		migrate.Status(args)
 	default:
 		logger.Warn("Invalid Commands please try -h or --help")
 	}
