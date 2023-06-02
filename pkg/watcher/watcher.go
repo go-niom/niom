@@ -1,6 +1,7 @@
 package watcher
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -10,6 +11,7 @@ import (
 	"github.com/go-niom/niom/pkg/constants"
 	"github.com/go-niom/niom/pkg/logger"
 	"github.com/go-niom/niom/pkg/terminal"
+	"github.com/go-niom/niom/pkg/utils"
 	"github.com/gookit/color"
 )
 
@@ -35,7 +37,7 @@ func rebuildCheck() {
 	}()
 }
 
-func watchFolder(path string) {
+func watchFolder(path string, ext []string) {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
 		log.Fatal(err)
@@ -49,7 +51,17 @@ func watchFolder(path string) {
 					return
 				}
 				if event.Has(fsnotify.Write) {
-					WatcherChannel <- event.String()
+
+					if ext[0] != "*" {
+						for _, v := range ext {
+							if strings.HasSuffix(event.Name, v) {
+								WatcherChannel <- event.String()
+							}
+						}
+					} else {
+						WatcherChannel <- event.String()
+					}
+
 				}
 
 			case err, ok := <-watcher.Errors:
@@ -68,18 +80,23 @@ func watchFolder(path string) {
 }
 
 // Watch keep tracks of the files and notify when there are any changes in the files
-func Watch() {
+func Watch(args []string) {
+	ext := []string{"*"}
+	if extensions := utils.ReadArgs("-e=", args); extensions != "" {
+		ext = strings.Split(extensions, ",")
+	}
 	logger.Info("watching path(s): *.*")
-	logger.Info("watching extensions: *")
+	logger.Info(fmt.Sprintf("watching extensions: %v", ext))
 	rebuildCheck()
 	root := "."
 	filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
 
 		if info.IsDir() {
 			if len(path) > 1 && strings.HasPrefix(filepath.Base(path), ".") {
+				println(path)
 				return filepath.SkipDir
 			}
-			watchFolder(path)
+			watchFolder(path, ext)
 		}
 
 		return err
