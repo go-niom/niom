@@ -68,6 +68,9 @@ $ niom migration down -a #-a => all
 
 #This will rollback migration all migrations from the given path -p= 
 $ niom migration down -a -p="database/test"
+
+#Notes
+use -d=<"Database url"> to specify the database manually"
 `)
 }
 
@@ -91,6 +94,7 @@ func dbInit() string {
 func migrations(args []string) {
 	if len(args) == 0 {
 		logger.Warn("Invalid Commands")
+		help()
 		return
 	}
 	if s := dbInit(); s != "" {

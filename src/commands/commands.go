@@ -75,7 +75,7 @@ func Commands(args []string) {
 		handler.Install(args[2:])
 	case "install:dev":
 		handler.InstallDev(args[2:])
-	case "migration":
+	case "migration", "mg":
 		migrations(args[2:])
 
 	default:

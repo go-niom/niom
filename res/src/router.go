@@ -9,8 +9,8 @@ import (
 func {{ .Name}}Router(router fiber.Router) {
 
 	route := router.Group("/{{ .NameLowerCase}}")
-	route.Get("/:id", {{ .Name}}Controller.GetAll{{ .Name}})
-	route.Get("/", {{ .Name}}Controller.Get{{ .Name}}ById)
+	route.Get("/:id", {{ .Name}}Controller.Get{{ .Name}}ById)
+	route.Get("/", {{ .Name}}Controller.GetAll{{ .Name}})
 	route.Post("/", {{ .Name}}Controller.Create{{ .Name}})
 	route.Patch("/", {{ .Name}}Controller.Update{{ .Name}})
 	route.Delete("/:id", {{ .Name}}Controller.Delete{{ .Name}})

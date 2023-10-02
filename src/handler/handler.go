@@ -70,6 +70,7 @@ func Help() {
   start:dev [options] [app]                       Run app rebuild/watch mode.
   update|u [options]                              Update Niom CLI.
   swagger|sg [options]                            Generate Swagger docs
+  migration|mg [options]                          Manage database migrations
   generate|g [options] <schematic> [name] [path]  Generate a Niom element.`)
 	print(`
 	┌───────────────────────────────────────────────────────────────────┐

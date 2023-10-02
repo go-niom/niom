@@ -29,6 +29,8 @@ func (db *DB) connect(dbURI string) (err error) {
 			cfg.SslMode,
 		)
 	}
+	logger.Info("Connecting to database")
+	logger.Info(dbURI)
 
 	db.DB, err = sql.Open("postgres", dbURI)
 	if err != nil {

@@ -12,7 +12,9 @@ import (
 	"github.com/go-niom/niom/res/misc"
 	"github.com/go-niom/niom/res/pkg/common"
 	"github.com/go-niom/niom/res/pkg/config"
+	"github.com/go-niom/niom/res/pkg/database"
 	"github.com/go-niom/niom/res/pkg/logger"
+	"github.com/go-niom/niom/res/pkg/mailer"
 	"github.com/go-niom/niom/res/pkg/middleware"
 	"github.com/go-niom/niom/res/pkg/response"
 	pkgUtils "github.com/go-niom/niom/res/pkg/utils"
@@ -56,6 +58,12 @@ func CreateInitialFiles(moduleName string) {
 
 	//appMiddleware
 	appMiddleware(moduleName)
+
+	//databaseFile
+	databaseFile(moduleName)
+
+	//mailerFile
+	mailerFile(moduleName)
 
 	// create README.md with basic commands to run and application
 	// create server folder
@@ -127,12 +135,28 @@ func createConfigFiles(appName string) {
 	utils.RenderWriteToFile(config.DBConfig, appName, directory+"/db.go")
 	utils.RenderWriteToFile(config.HelperConfig, appName, directory+"/helper.go")
 	utils.RenderWriteToFile(config.JWTConfig, appName, directory+"/jwt.go")
+	utils.RenderWriteToFile(config.RedisConfig, appName, directory+"/redis.go")
+	utils.RenderWriteToFile(config.SMTPConfig, appName, directory+"/smtp.go")
 }
 
 func loggerFile(moduleName string) {
 	appName := utils.GetAppName(moduleName)
 	directory := appName + "/pkg/logger"
 	utils.RenderWriteToFileModule(logger.Logger, directory+"/logger.go", "logger", moduleName, "")
+}
+
+func databaseFile(moduleName string) {
+	appName := utils.GetAppName(moduleName)
+	directory := appName + "/pkg/database"
+	utils.RenderWriteToFileModule(database.Postgres, directory+"/postgres.go", "database", moduleName, "")
+	utils.RenderWriteToFileModule(database.Redis, directory+"/redis.go", "database", moduleName, "")
+}
+
+func mailerFile(moduleName string) {
+	appName := utils.GetAppName(moduleName)
+	directory := appName + "/pkg/mailer"
+	utils.RenderWriteToFileModule(mailer.Mailer, directory+"/mailer.go", "mailer", moduleName, "")
+
 }
 
 func appCommonFile(moduleName string) {

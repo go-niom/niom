@@ -1,26 +1,40 @@
 package misc
 
 const MiscEnv = `
-# APP settings:
+# APP Details:
 APP_NAME={{ .NameLowerCase}}
 APP_HOST=127.0.0.1
 APP_PORT=7000
 APP_READ_TIMEOUT=30
 APP_DEBUG=false
 
-# JWT settings:
+# JWT Details:
 JWT_SECRET_KEY="super_secret_here"
 JWT_SECRET_KEY_EXPIRE_MINUTES_COUNT=1440
 
-# Database settings:
+# Database Details:
 DB_HOST=niom-postgres
 DB_PORT=5432
 DB_USER=dev
 DB_PASSWORD=dev
 DB_NAME=niom_go_api
-DB_SSL_MODE=disable
+DB_SSL_MODE=verify-full
 DB_DEBUG=true
 DB_MAX_OPEN_CONNECTIONS=3
 DB_MAX_IDLE_CONNECTIONS=1
 DB_MAX_LIFETIME_CONNECTIONS=10
+
+# Redis Details:
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_USER=
+REDIS_PASSWORD=
+
+# SMTP Details:
+MAIL_FROM=
+SMTP_HOST=smtp-relay.brevo.com
+SMTP_PORT=587
+SMTP_USER=
+SMTP_PASSWORD=
+
 `
