@@ -1,7 +1,7 @@
 package constants
 
 const AppSign = "[NIOM]"
-const AppVersion = "v0.1.9"
+const AppVersion = "v0.2.0"
 
 const CliPrompt string = `
 [{
