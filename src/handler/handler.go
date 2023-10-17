@@ -69,6 +69,7 @@ func Help() {
   build [options] [app]                           Build Niom application.
   start:dev [options] [app]                       Run app rebuild/watch mode.
   update|u [options]                              Update Niom CLI.
+  kill|kl [options]                               Kill running port. [-p=<port>] default is 7000
   swagger|sg [options]                            Generate Swagger docs
   migration|mg [options]                          Manage database migrations
   generate|g [options] <schematic> [name] [path]  Generate a Niom element.`)
@@ -182,6 +183,15 @@ func Dev(args []string) {
 // Update niom app
 func UpdateApp() {
 	terminal.CmdExecute(".", "go", []string{"install", "github.com/go-niom/niom@latest"}, false)
+}
+
+// KillPort kills the port
+func KillPort(args []string) {
+	port := utils.ReadArgs("-p=", args)
+	if port == "" {
+		port = "7000"
+	}
+	terminal.CmdExecute(".", "kill", []string{" -9 `lsof -t -i:" + port + "`"}, false)
 }
 
 // TODO future use

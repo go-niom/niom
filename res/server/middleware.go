@@ -19,15 +19,15 @@ func registerMiddleware(fApp *fiber.App) {
 		return
 	}
 
-	//initialize redish
-	// redis := database.ConnetRedis()
+	//initialize redis
+	// redis := database.ConnectRedis()
 	// if redis == nil {
 	// 	logger.Error("failed to initialize redis", nil)
 	// 	return
 	// }
 
 	fApp.Use(func(c *fiber.Ctx) error {
-		c.Locals("rdb", redis)
+		// c.Locals("rdb", redis)
 		c.Locals("pgsql", pgsql)
 		return c.Next()
 	})

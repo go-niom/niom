@@ -13,12 +13,12 @@ JWT_SECRET_KEY="super_secret_here"
 JWT_SECRET_KEY_EXPIRE_MINUTES_COUNT=1440
 
 # Database Details:
-DB_HOST=niom-postgres
+DB_HOST=localhost
 DB_PORT=5432
 DB_USER=dev
 DB_PASSWORD=dev
-DB_NAME=niom_go_api
-DB_SSL_MODE=verify-full
+DB_NAME=postgres
+DB_SSL_MODE=disable #verify-full
 DB_DEBUG=true
 DB_MAX_OPEN_CONNECTIONS=3
 DB_MAX_IDLE_CONNECTIONS=1

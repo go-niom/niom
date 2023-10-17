@@ -4,10 +4,7 @@ const Redis = `package database
 
 import (
 	"context"
-	"encoding/json"
-	"errors"
 	"fmt"
-	"strings"
 
 	"github.com/go-redis/redis/v8"
 	"{{ .ModuleName}}/pkg/config"
@@ -22,7 +19,7 @@ var (
 	Redis *RedisDB
 )
 
-func ConnetRedis() *RedisDB {
+func ConnectRedis() *RedisDB {
 	cfg := config.RedisDBCfg()
 	client := redis.NewClient(&redis.Options{
 		Addr:     fmt.Sprintf("%s:%s", cfg.Host, cfg.Port), // Redis server address
@@ -61,7 +58,7 @@ func (r *RedisDB) AddMapDataInRedis(key string, data interface{}) error {
 }
 
 // GetMapDataFromRedis
-func (r *RedisDB) GetMapDataFromRedis(key string) (map[string]interface{}, error) {
+func (r *RedisDB) GetMapDataFromRedis(key string) (map[string]string, error) {
 	logger.Info(fmt.Sprintf("getting the map data %s", key))
 
 	val, err := r.Client.HGetAll(context.Background(), key).Result()
